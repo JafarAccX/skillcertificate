@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 40 23% 97.5%;
+    --foreground: 232 28% 8%;
+    --surface: 0 0% 100%;
+    --surface-2: 40 12% 95%;
+    --surface-3: 40 10% 91%;
+    --card: 0 0% 100%;
+    --card-foreground: 232 28% 8%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 232 28% 8%;
+    --brand: 236 72% 54%;
+    --brand-2: 258 68% 58%;
+    --brand-foreground: 0 0% 100%;
+    --primary: 236 72% 54%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 40 12% 94%;
+    --secondary-foreground: 232 28% 8%;
+    --muted: 40 12% 94%;
+    --muted-foreground: 230 9% 36%;
+    --accent: 40 12% 93%;
+    --accent-foreground: 232 28% 8%;
+    --success: 154 62% 32%;
+    --warning: 32 92% 40%;
+    --locked: 230 6% 58%;
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 36 10% 86%;
+    --input: 36 10% 84%;
+    --ring: 236 72% 54%;
+    --review-background: 40 14% 95.5%;
+    --shadow-color: 232 30% 20%;
+    --glow: 236 72% 54%;
+    --radius: 0.875rem;
+    --font-heading: "Geist", ui-sans-serif, system-ui, sans-serif;
+    --font-body: "Geist", ui-sans-serif, system-ui, sans-serif;
+    --font-display: "Instrument Serif", ui-serif, Georgia, serif;
+    --font-mono: "Geist Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  }
+
+  .dark {
+    --background: 230 24% 4.5%;
+    --foreground: 225 25% 95%;
+    --surface: 230 18% 7.5%;
+    --surface-2: 230 15% 10.5%;
+    --surface-3: 230 13% 14%;
+    --card: 230 18% 7.5%;
+    --card-foreground: 225 25% 95%;
+    --popover: 230 18% 8.5%;
+    --popover-foreground: 225 25% 95%;
+    --brand: 234 90% 70%;
+    --brand-2: 260 85% 74%;
+    --brand-foreground: 230 30% 6%;
+    --primary: 234 90% 70%;
+    --primary-foreground: 230 30% 6%;
+    --secondary: 230 15% 11%;
+    --secondary-foreground: 225 25% 95%;
+    --muted: 230 15% 11%;
+    --muted-foreground: 225 11% 66%;
+    --accent: 230 14% 13%;
+    --accent-foreground: 225 25% 95%;
+    --success: 152 58% 55%;
+    --warning: 40 92% 62%;
+    --locked: 228 9% 44%;
+    --destructive: 0 70% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 228 14% 16%;
+    --input: 228 14% 18%;
+    --ring: 234 90% 70%;
+    --review-background: 230 17% 6.5%;
+    --shadow-color: 230 50% 2%;
+    --glow: 234 90% 66%;
+  }
+
+  * {
+    border-color: hsl(var(--border));
+  }
+
+  body {
+    background-color: hsl(var(--background));
+    font-family: var(--font-body);
+    color: hsl(var(--foreground));
+  }
+}
+
+.bg-grid {
+  background-image: linear-gradient(hsl(var(--foreground) / 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, hsl(var(--foreground) / 0.035) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+.mask-radial {
+  -webkit-mask-image: radial-gradient(#000 30%, #0000 75%);
+  mask-image: radial-gradient(#000 30%, #0000 75%);
+}
+
+.mask-fade-y {
+  -webkit-mask-image: linear-gradient(#0000, #000 14% 86%, #0000);
+  mask-image: linear-gradient(#0000, #000 14% 86%, #0000);
+}
+
+.stream-panel:hover .stream-track,
+.stream-panel.is-paused .stream-track {
+  animation-play-state: paused;
+}
+
+.light-sweep {
+  position: relative;
+  overflow: hidden;
+}
+
+.light-sweep:after {
+  content: "";
+  background: linear-gradient(90deg, transparent, hsl(var(--foreground) / 0.12), transparent);
+  pointer-events: none;
+  width: 40%;
+  position: absolute;
+  inset: 0 auto 0 0;
+  transform: translate(-120%) skew(-18deg);
+}
+
+.light-sweep:hover:after,
+.light-sweep.sweep-now:after {
+  animation: 1.4s cubic-bezier(0.2, 0.7, 0.2, 1) sweep;
+}
+
+@keyframes sweep {
+  0% { transform: translate(-120%) skew(-18deg); }
+  to { transform: translate(220%) skew(-18deg); }
+}
+
+@media print {
+  body * {
+    visibility: hidden !important;
+  }
+  .print-area,
+  .print-area * {
+    visibility: visible !important;
+  }
+  .print-area {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    box-shadow: none !important;
+  }
+}

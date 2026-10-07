@@ -1,0 +1,6017 @@
+function Lw(e,t,n){
+(0,y.useInsertionEffect)(()=>e.on(t,n),[e,t,n])
+}
+function Rw(e,t){
+let n,r=()=>{
+let{
+currentTime:r
+}
+=t,i=(r===null?0:r.value)/100;
+n!==i&&e(i),n=i
+}
+;
+return Z.update(r,!0),()=>mh(r)
+}
+var zw=new WeakMap,Bw;
+function Vw(e,t){
+if(t){
+let{
+inlineSize:e,blockSize:n
+}
+=t[0];
+return{
+width:e,height:n
+}
+
+}
+return e instanceof SVGElement&&`getBBox`in e?e.getBBox():{
+width:e.offsetWidth,height:e.offsetHeight
+}
+
+}
+function Hw({
+target:e,contentRect:t,borderBoxSize:n
+}
+){
+var r;
+(r=zw.get(e))==null||r.forEach(r=>{
+r({
+target:e,contentSize:t,get size(){
+return Vw(e,n)
+}
+
+}
+)
+}
+)
+}
+function Uw(e){
+e.forEach(Hw)
+}
+function Ww(){
+typeof ResizeObserver>`u`||(Bw=new ResizeObserver(Uw))
+}
+function Gw(e,t){
+Bw||Ww();
+let n=F_(e);
+return n.forEach(e=>{
+let n=zw.get(e);
+n||(n=new Set,zw.set(e,n)),n.add(t),Bw?.observe(e)
+}
+),()=>{
+n.forEach(e=>{
+let n=zw.get(e);
+n?.delete(t),n?.size||Bw?.unobserve(e)
+}
+)
+}
+
+}
+var Kw=new Set,qw;
+function Jw(){
+qw=()=>{
+let e={
+width:window.innerWidth,height:window.innerHeight
+}
+,t={
+target:window,size:e,contentSize:e
+}
+;
+Kw.forEach(e=>e(t))
+}
+,window.addEventListener(`resize`,qw)
+}
+function Yw(e){
+return Kw.add(e),qw||Jw(),()=>{
+Kw.delete(e),!Kw.size&&qw&&(qw=void 0)
+}
+
+}
+function Xw(e,t){
+return typeof e==`function`?Yw(e):Gw(e,t)
+}
+var Zw=50,Qw=()=>({
+current:0,offset:[],progress:0,scrollLength:0,targetOffset:0,targetLength:0,containerLength:0,velocity:0
+}
+),$w=()=>({
+time:0,x:Qw(),y:Qw()
+}
+),eT={
+x:{
+length:`Width`,position:`Left`
+}
+,y:{
+length:`Height`,position:`Top`
+}
+
+}
+;
+function tT(e,t,n,r){
+let i=n[t],{
+length:a,position:o
+}
+=eT[t],s=i.current,c=n.time;
+i.current=e[`scroll${
+o
+}
+`],i.scrollLength=e[`scroll${
+a
+}
+`]-e[`client${
+a
+}
+`],i.offset.length=0,i.offset[0]=0,i.offset[1]=i.scrollLength,i.progress=oh(0,i.scrollLength,i.current);
+let l=r-c;
+i.velocity=l>Zw?0:rv(i.current-s,l)
+}
+function nT(e,t,n){
+tT(e,`x`,t,n),tT(e,`y`,t,n),t.time=n
+}
+function rT(e,t){
+let n={
+x:0,y:0
+}
+,r=e;
+for(;
+r&&r!==t;
+)if(r instanceof HTMLElement)n.x+=r.offsetLeft,n.y+=r.offsetTop,r=r.offsetParent;
+else if(r.tagName===`svg`){
+let e=r.getBoundingClientRect();
+r=r.parentElement;
+let t=r.getBoundingClientRect();
+n.x+=e.left-t.left,n.y+=e.top-t.top
+}
+else if(r instanceof SVGGraphicsElement){
+let{
+x:e,y:t
+}
+=r.getBBox();
+n.x+=e,n.y+=t;
+let i=null,a=r.parentNode;
+for(;
+!i;
+)a.tagName===`svg`&&(i=a),a=r.parentNode;
+r=i
+}
+else break;
+return n
+}
+var iT={
+start:0,center:.5,end:1
+}
+;
+function aT(e,t,n=0){
+let r=0;
+if(e in iT&&(e=iT[e]),typeof e==`string`){
+let t=parseFloat(e);
+e.endsWith(`px`)?r=t:e.endsWith(`%`)?e=t/100:e.endsWith(`vw`)?r=t/100*document.documentElement.clientWidth:e.endsWith(`vh`)?r=t/100*document.documentElement.clientHeight:e=t
+}
+return typeof e==`number`&&(r=t*e),n+r
+}
+var oT=[0,0];
+function sT(e,t,n,r){
+let i=Array.isArray(e)?e:oT,a=0,o=0;
+return typeof e==`number`?i=[e,e]:typeof e==`string`&&(e=e.trim(),i=e.includes(` `)?e.split(` `):[e,iT[e]?e:`0`]),a=aT(i[0],n,r),o=aT(i[1],t),a-o
+}
+var cT={
+Enter:[[0,1],[1,1]],Exit:[[0,0],[1,0]],Any:[[1,0],[0,1]],All:[[0,0],[1,1]]
+}
+,lT={
+x:0,y:0
+}
+;
+function uT(e){
+return`getBBox`in e&&e.tagName!==`svg`?e.getBBox():{
+width:e.clientWidth,height:e.clientHeight
+}
+
+}
+function dT(e,t,n){
+let{
+offset:r=cT.All
+}
+=n,{
+target:i=e,axis:a=`y`
+}
+=n,o=a===`y`?`height`:`width`,s=i===e?lT:rT(i,e),c=i===e?{
+width:e.scrollWidth,height:e.scrollHeight
+}
+:uT(i),l={
+width:e.clientWidth,height:e.clientHeight
+}
+;
+t[a].offset.length=0;
+let u=!t[a].interpolate,d=r.length;
+for(let e=0;
+e<d;
+e++){
+let n=sT(r[e],l[o],c[o],s[a]);
+!u&&n!==t[a].interpolatorOffsets[e]&&(u=!0),t[a].offset[e]=n
+}
+u&&(t[a].interpolate=Ab(t[a].offset,Mb(r),{
+clamp:!1
+}
+),t[a].interpolatorOffsets=[...t[a].offset]),t[a].progress=xg(0,1,t[a].interpolate(t[a].current))
+}
+function fT(e,t=e,n){
+if(n.x.targetOffset=0,n.y.targetOffset=0,t!==e){
+let r=t;
+for(;
+r&&r!==e;
+)n.x.targetOffset+=r.offsetLeft,n.y.targetOffset+=r.offsetTop,r=r.offsetParent
+}
+n.x.targetLength=t===e?t.scrollWidth:t.clientWidth,n.y.targetLength=t===e?t.scrollHeight:t.clientHeight,n.x.containerLength=e.clientWidth,n.y.containerLength=e.clientHeight
+}
+function pT(e,t,n,r={
+
+}
+){
+return{
+measure:()=>fT(e,r.target,n),update:t=>{
+nT(e,n,t),(r.offset||r.target)&&dT(e,n,r)
+}
+,notify:()=>t(n)
+}
+
+}
+var mT=new WeakMap,hT=new WeakMap,gT=new WeakMap,_T=e=>e===document.documentElement?window:e;
+function vT(e,{
+container:t=document.documentElement,...n
+}
+={
+
+}
+){
+let r=gT.get(t);
+r||(r=new Set,gT.set(t,r));
+let i=pT(t,e,$w(),n);
+if(r.add(i),!mT.has(t)){
+let e=()=>{
+for(let e of r)e.measure()
+}
+,n=()=>{
+for(let e of r)e.update(hh.timestamp)
+}
+,i=()=>{
+for(let e of r)e.notify()
+}
+,a=()=>{
+Z.read(e,!1,!0),Z.read(n,!1,!0),Z.update(i,!1,!0)
+}
+;
+mT.set(t,a);
+let o=_T(t);
+window.addEventListener(`resize`,a,{
+passive:!0
+}
+),t!==document.documentElement&&hT.set(t,Xw(t,a)),o.addEventListener(`scroll`,a,{
+passive:!0
+}
+)
+}
+let a=mT.get(t);
+return Z.read(a,!1,!0),()=>{
+var e;
+mh(a);
+let n=gT.get(t);
+if(!n||(n.delete(i),n.size))return;
+let r=mT.get(t);
+mT.delete(t),r&&(_T(t).removeEventListener(`scroll`,r),(e=hT.get(t))==null||e(),window.removeEventListener(`resize`,r))
+}
+
+}
+function yT({
+source:e,container:t,axis:n=`y`
+}
+){
+e&&(t=e);
+let r={
+value:0
+}
+;
+return{
+currentTime:r,cancel:vT(e=>{
+r.value=e[n].progress*100
+}
+,{
+container:t,axis:n
+}
+)
+}
+
+}
+var bT=new Map;
+function xT({
+source:e,container:t=document.documentElement,axis:n=`y`
+}
+={
+
+}
+){
+e&&(t=e),bT.has(t)||bT.set(t,{
+
+}
+);
+let r=bT.get(t);
+return r[n]||(r[n]=h_()?new ScrollTimeline({
+source:t,axis:n
+}
+):yT({
+source:t,axis:n
+}
+)),r[n]
+}
+function ST(e){
+return e.length===2
+}
+function CT(e){
+return e&&(e.target||e.offset)
+}
+function wT(e,t){
+return ST(e)||CT(t)?vT(n=>{
+e(n[t.axis].progress,n)
+}
+,t):Rw(e,xT(t))
+}
+function TT(e,t){
+if(e.flatten(),CT(t))return e.pause(),vT(n=>{
+e.time=e.duration*n[t.axis].progress
+}
+,t);
+{
+let n=xT(t);
+return e.attachTimeline?e.attachTimeline(n,e=>(e.pause(),Rw(t=>{
+e.time=e.duration*t
+}
+,n))):nh
+}
+
+}
+function ET(e,{
+axis:t=`y`,...n
+}
+={
+
+}
+){
+let r={
+axis:t,...n
+}
+;
+return typeof e==`function`?wT(e,r):TT(e,r)
+}
+function DT(e,t){
+rh(!!(!t||t.current),`You have defined a ${
+e
+}
+ options but the provided ref is not yet hydrated, probably because it's defined higher up the tree. Try calling useScroll() in the same component as the ref, or setting its \`layoutEffect: false\` option.`)
+}
+var OT=()=>({
+scrollX:cv(0),scrollY:cv(0),scrollXProgress:cv(0),scrollYProgress:cv(0)
+}
+);
+function kT({
+container:e,target:t,layoutEffect:n=!0,...r
+}
+={
+
+}
+){
+let i=Um(OT);
+return(n?eh:y.useEffect)(()=>(DT(`target`,t),DT(`container`,e),ET((e,{
+x:t,y:n
+}
+)=>{
+i.scrollX.set(t.current),i.scrollXProgress.set(t.progress),i.scrollY.set(n.current),i.scrollYProgress.set(n.progress)
+}
+,{
+...r,container:e?.current||void 0,target:t?.current||void 0
+}
+)),[e,t,JSON.stringify(r.offset)]),i
+}
+function AT(e){
+let t=Um(()=>cv(e)),{
+isStatic:n
+}
+=(0,y.useContext)(Gm);
+if(n){
+let[,n]=(0,y.useState)(e);
+(0,y.useEffect)(()=>t.on(`change`,n),[])
+}
+return t
+}
+function jT(e,t){
+let n=AT(t()),r=()=>n.set(t());
+return r(),eh(()=>{
+let t=()=>Z.preRender(r,!1,!0),n=e.map(e=>e.on(`change`,t));
+return()=>{
+n.forEach(e=>e()),mh(r)
+}
+
+}
+),n
+}
+function MT(e){
+return typeof e==`number`?e:parseFloat(e)
+}
+function NT(e,t={
+
+}
+){
+let{
+isStatic:n
+}
+=(0,y.useContext)(Gm),r=(0,y.useRef)(null),i=AT(cg(e)?MT(e.get()):e),a=(0,y.useRef)(i.get()),o=(0,y.useRef)(()=>{
+
+}
+),s=()=>{
+let e=r.current;
+e&&e.time===0&&e.sample(hh.delta),c(),r.current=Bb({
+keyframes:[i.get(),a.current],velocity:i.getVelocity(),type:`spring`,restDelta:.001,restSpeed:.01,...t,onUpdate:o.current
+}
+)
+}
+,c=()=>{
+r.current&&r.current.stop()
+}
+;
+return(0,y.useInsertionEffect)(()=>i.attach((e,t)=>n?t(e):(a.current=e,o.current=t,Z.update(s),i.get()),c),[JSON.stringify(t)]),eh(()=>{
+if(cg(e))return e.on(`change`,e=>i.set(MT(e)))
+}
+,[i]),i
+}
+var PT=e=>e&&typeof e==`object`&&e.mix,FT=e=>PT(e)?e.mix:void 0;
+function IT(...e){
+let t=!Array.isArray(e[0]),n=t?0:-1,r=e[0+n],i=e[1+n],a=e[2+n],o=e[3+n],s=Ab(i,a,{
+mixer:FT(a[0]),...o
+}
+);
+return t?s(r):s
+}
+function LT(e){
+ov.current=[],e();
+let t=jT(ov.current,e);
+return ov.current=void 0,t
+}
+function RT(e,t,n,r){
+if(typeof e==`function`)return LT(e);
+let i=typeof t==`function`?t:IT(t,n,r);
+return Array.isArray(e)?zT(e,i):zT([e],([e])=>i(e))
+}
+function zT(e,t){
+let n=Um(()=>[]);
+return jT(e,()=>{
+n.length=0;
+let r=e.length;
+for(let t=0;
+t<r;
+t++)n[t]=e[t].get();
+return t(n)
+}
+)
+}
+function BT(){
+!ww.current&&Tw();
+let[e]=(0,y.useState)(Cw.current);
+return e
+}
+var VT=(e,t,n)=>{
+let r=t-e;
+return((n-e)%r+r)%r+e
+}
+;
+function HT(e,t){
+return Eb(e)?e[VT(0,e.length,t)]:e
+}
+function UT(e){
+return typeof e==`object`&&!Array.isArray(e)
+}
+function WT(e,t,n,r){
+return typeof e==`string`&&UT(t)?F_(e,n,r):e instanceof NodeList?Array.from(e):Array.isArray(e)?e:[e]
+}
+function GT(e,t,n){
+return e*(t+1)
+}
+function KT(e,t,n,r){
+return typeof t==`number`?t:t.startsWith(`-`)||t.startsWith(`+`)?Math.max(0,e+parseFloat(t)):t===`<`?n:r.get(t)??e
+}
+function qT(e,t,n){
+for(let r=0;
+r<e.length;
+r++){
+let i=e[r];
+i.at>t&&i.at<n&&(tv(e,i),r--)
+}
+
+}
+function JT(e,t,n,r,i,a){
+qT(e,i,a);
+for(let o=0;
+o<t.length;
+o++)e.push({
+value:t[o],at:Uy(i,a,r[o]),easing:HT(n,o)
+}
+)
+}
+function YT(e,t){
+for(let n=0;
+n<e.length;
+n++)e[n]=e[n]/(t+1)
+}
+function XT(e,t){
+return e.at===t.at?e.value===null?1:t.value===null?-1:0:e.at-t.at
+}
+var ZT=`easeInOut`,QT=20;
+function $T(e,{
+defaultTransition:t={
+
+}
+,...n
+}
+={
+
+}
+,r,i){
+let a=t.duration||.3,o=new Map,s=new Map,c={
+
+}
+,l=new Map,u=0,d=0,f=0;
+for(let n=0;
+n<e.length;
+n++){
+let o=e[n];
+if(typeof o==`string`){
+l.set(o,d);
+continue
+}
+if(!Array.isArray(o)){
+l.set(o.name,KT(d,o.at,u,l));
+continue
+}
+let[p,m,h={
+
+}
+]=o;
+h.at!==void 0&&(d=KT(d,h.at,u,l));
+let g=0,_=(e,n,r,o=0,s=0)=>{
+let c=nE(e),{
+delay:l=0,times:u=Mb(c),type:p=`keyframes`,repeat:m,repeatType:h,repeatDelay:_=0,...v
+}
+=n,{
+ease:y=t.ease||`easeOut`,duration:b
+}
+=n,x=typeof l==`function`?l(o,s):l,S=c.length,C=S_(p)?p:i?.[p];
+if(S<=2&&C){
+let e=100;
+if(S===2&&aE(c)){
+let t=c[1]-c[0];
+e=Math.abs(t)
+}
+let t={
+...v
+}
+;
+b!==void 0&&(t.duration=sh(b));
+let n=x_(t,e,C);
+y=n.ease,b=n.duration
+}
+b??=a;
+let w=d+x;
+u.length===1&&u[0]===0&&(u[1]=1);
+let T=u.length-c.length;
+if(T>0&&jb(u,T),c.length===1&&c.unshift(null),m){
+ih(m<QT,`Repeat count too high, must be less than 20`),b=GT(b,m);
+let e=[...c],t=[...u];
+y=Array.isArray(y)?[...y]:[y];
+let n=[...y];
+for(let r=0;
+r<m;
+r++){
+c.push(...e);
+for(let i=0;
+i<e.length;
+i++)u.push(t[i]+(r+1)),y.push(i===0?`linear`:HT(n,i-1))
+}
+YT(u,m)
+}
+let ee=w+b;
+JT(r,c,y,u,w,ee),g=Math.max(x+b,g),f=Math.max(ee,f)
+}
+;
+if(cg(p)){
+let e=eE(p,s);
+_(m,h,tE(`default`,e))
+}
+else{
+let e=WT(p,m,r,c),t=e.length;
+for(let n=0;
+n<t;
+n++){
+m=m,h=h;
+let r=e[n],i=eE(r,s);
+for(let e in m)_(m[e],rE(h,e),tE(e,i),n,t)
+}
+
+}
+u=d,d+=g
+}
+return s.forEach((e,r)=>{
+for(let i in e){
+let a=e[i];
+a.sort(XT);
+let s=[],c=[],l=[];
+for(let e=0;
+e<a.length;
+e++){
+let{
+at:t,value:n,easing:r
+}
+=a[e];
+s.push(n),c.push(oh(0,f,t)),l.push(r||`easeOut`)
+}
+c[0]!==0&&(c.unshift(0),s.unshift(s[0]),l.unshift(ZT)),c[c.length-1]!==1&&(c.push(1),s.push(null)),o.has(r)||o.set(r,{
+keyframes:{
+
+}
+,transition:{
+
+}
+
+}
+);
+let u=o.get(r);
+u.keyframes[i]=s,u.transition[i]={
+...t,duration:f,ease:l,times:c,...n
+}
+
+}
+
+}
+),o
+}
+function eE(e,t){
+return!t.has(e)&&t.set(e,{
+
+}
+),t.get(e)
+}
+function tE(e,t){
+return t[e]||(t[e]=[]),t[e]
+}
+function nE(e){
+return Array.isArray(e)?e:[e]
+}
+function rE(e,t){
+return e&&e[t]?{
+...e,...e[t]
+}
+:{
+...e
+}
+
+}
+var iE=e=>typeof e==`number`,aE=e=>e.every(iE);
+function oE(e,t){
+return e in t
+}
+var sE=class extends jw{
+constructor(){
+super(...arguments),this.type=`object`
+}
+readValueFromInstance(e,t){
+if(oE(t,e)){
+let n=e[t];
+if(typeof n==`string`||typeof n==`number`)return n
+}
+
+}
+getBaseTargetFromProps(){
+
+}
+removeValueFromRenderState(e,t){
+delete t.output[e]
+}
+measureInstanceViewportBox(){
+return cS()
+}
+build(e,t){
+Object.assign(e.output,t)
+}
+renderInstance(e,{
+output:t
+}
+){
+Object.assign(e,t)
+}
+sortInstanceNodePosition(){
+return 0
+}
+
+}
+;
+function cE(e){
+let t={
+presenceContext:null,props:{
+
+}
+,visualState:{
+renderState:{
+transform:{
+
+}
+,transformOrigin:{
+
+}
+,style:{
+
+}
+,vars:{
+
+}
+,attrs:{
+
+}
+
+}
+,latestValues:{
+
+}
+
+}
+
+}
+,n=KS(e)?new Fw(t):new Pw(t);
+n.mount(e),Ow.set(e,n)
+}
+function lE(e){
+let t=new sE({
+presenceContext:null,props:{
+
+}
+,visualState:{
+renderState:{
+output:{
+
+}
+
+}
+,latestValues:{
+
+}
+
+}
+
+}
+);
+t.mount(e),Ow.set(e,t)
+}
+function uE(e,t){
+return cg(e)||typeof e==`number`||typeof e==`string`&&!UT(t)
+}
+function dE(e,t,n,r){
+let i=[];
+if(uE(e,t))i.push(GS(e,UT(t)&&t.default||t,n&&(n.default||n)));
+else{
+let a=WT(e,t,r),o=a.length;
+ih(!!o,`No valid elements provided.`);
+for(let e=0;
+e<o;
+e++){
+let r=a[e],s=r instanceof Element?cE:lE;
+Ow.has(r)||s(r);
+let c=Ow.get(r),l={
+...n
+}
+;
+`delay`in l&&typeof l.delay==`function`&&(l.delay=l.delay(e,o)),i.push(...ax(c,{
+...t,transition:l
+}
+,{
+
+}
+))
+}
+
+}
+return i
+}
+function fE(e,t,n){
+let r=[];
+return $T(e,t,n,{
+spring:xb
+}
+).forEach(({
+keyframes:e,transition:t
+}
+,n)=>{
+r.push(...dE(n,e,t))
+}
+),r
+}
+function pE(e){
+return Array.isArray(e)&&e.some(Array.isArray)
+}
+function mE(e){
+function t(t,n,r){
+let i=[];
+i=pE(t)?fE(t,n,e):dE(t,n,r,e);
+let a=new __(i);
+return e&&e.animations.push(a),a
+}
+return t
+}
+var hE=mE();
+function gE(){
+return(0,A.jsxs)(Ds,{
+to:`/`,className:`group flex items-center gap-2.5`,"aria-label":`AcceleratorX home`,children:[(0,A.jsxs)(`span`,{
+className:`relative flex h-7 w-7 items-center justify-center rounded-lg bg-foreground text-background transition-transform duration-500 group-hover:rotate-[8deg]`,children:[(0,A.jsx)(`svg`,{
+viewBox:`0 0 24 24`,className:`h-4 w-4`,fill:`none`,stroke:`currentColor`,strokeWidth:`2.4`,strokeLinecap:`round`,"aria-hidden":!0,children:(0,A.jsx)(`path`,{
+d:`M5 5l14 14M19 5L5 19`
+}
+)
+}
+),(0,A.jsx)(`span`,{
+className:`absolute -right-0.5 -top-0.5 h-2 w-2 rounded-full bg-brand`
+}
+)]
+}
+),(0,A.jsx)(`span`,{
+className:`font-heading text-[15px] font-semibold tracking-tight`,children:`AcceleratorX`
+}
+)]
+}
+)
+}
+function _E(){
+let{
+theme:e,toggle:t
+}
+=Vm(),n=e===`dark`;
+return(0,A.jsx)(`button`,{
+onClick:t,"aria-label":n?`Switch to light mode`:`Switch to dark mode`,className:`relative flex h-9 w-9 items-center justify-center overflow-hidden rounded-full border border-border bg-surface/60 text-foreground transition-colors hover:bg-surface-2`,children:(0,A.jsx)(th,{
+mode:`wait`,initial:!1,children:(0,A.jsx)($.span,{
+initial:{
+y:14,opacity:0,rotate:-40
+}
+,animate:{
+y:0,opacity:1,rotate:0
+}
+,exit:{
+y:-14,opacity:0,rotate:40
+}
+,transition:{
+duration:.25
+}
+,children:n?(0,A.jsx)(En,{
+className:`h-4 w-4`
+}
+):(0,A.jsx)(Pn,{
+className:`h-4 w-4`
+}
+)
+}
+,e)
+}
+)
+}
+)
+}
+var vE={
+primary:`bg-foreground text-background hover:bg-foreground/90 shadow-soft`,brand:`bg-brand text-brand-foreground hover:bg-brand/90 shadow-soft`,outline:`border border-border bg-surface/60 text-foreground hover:bg-surface-2 hover:border-foreground/20`,ghost:`text-foreground hover:bg-surface-2`
+}
+,yE={
+sm:`h-9 px-4 text-[13px]`,md:`h-11 px-5 text-sm`,lg:`h-13 px-7 text-[15px] py-3.5`
+}
+;
+function bE({
+to:e,onClick:t,variant:n=`primary`,size:r=`md`,arrow:i=!0,className:a=``,children:o,disabled:s,type:c=`button`,...l
+}
+){
+let u=`group inline-flex items-center justify-center gap-2 rounded-full font-medium tracking-tight transition-all duration-300 active:scale-[0.98] disabled:opacity-40 disabled:pointer-events-none ${
+vE[n]
+}
+ ${
+yE[r]
+}
+ ${
+a
+}
+`,d=(0,A.jsxs)(A.Fragment,{
+children:[(0,A.jsx)(`span`,{
+children:o
+}
+),i&&(0,A.jsx)(cn,{
+className:`h-4 w-4 transition-transform duration-300 group-hover:translate-x-1`,"aria-hidden":!0
+}
+)]
+}
+);
+return e?(0,A.jsx)(Ds,{
+to:e,className:u,...l,children:d
+}
+):(0,A.jsx)(`button`,{
+type:c,onClick:t,disabled:s,className:u,...l,children:d
+}
+)
+}
+var xE=[{
+label:`Programs`,to:`/programs`
+}
+,{
+label:`Skills`,to:`/skills`
+}
+,{
+label:`How It Works`,to:`/how-it-works`
+}
+,{
+label:`Verify`,to:`/verify`
+}
+,{
+label:`FAQ`,to:`/faq`
+}
+];
+function SE({
+open:e
+}
+){
+return(0,A.jsx)(th,{
+children:e&&(0,A.jsx)($.div,{
+initial:{
+height:0,opacity:0
+}
+,animate:{
+height:`auto`,opacity:1
+}
+,exit:{
+height:0,opacity:0
+}
+,transition:{
+duration:.3
+}
+,className:`overflow-hidden md:hidden`,children:(0,A.jsxs)(`div`,{
+className:`space-y-1 px-5 pb-6 pt-2`,children:[xE.map((e,t)=>(0,A.jsx)($.div,{
+initial:{
+opacity:0,x:-8
+}
+,animate:{
+opacity:1,x:0
+}
+,transition:{
+delay:.04*t
+}
+,children:(0,A.jsx)(Ds,{
+to:e.to,className:`block border-b border-border py-3.5 text-2xl font-medium tracking-tight`,children:e.label
+}
+)
+}
+,e.to)),(0,A.jsxs)(`div`,{
+className:`flex gap-2 pt-5`,children:[(0,A.jsx)(bE,{
+to:`/programs`,variant:`outline`,arrow:!1,className:`flex-1`,children:`Explore Paths`
+}
+),(0,A.jsx)(bE,{
+to:`/skills`,className:`flex-1`,children:`Get Certified`
+}
+)]
+}
+)]
+}
+)
+}
+)
+}
+)
+}
+var CE=[{
+label:`Programs`,to:`/programs`
+}
+,{
+label:`Skills`,to:`/skills`
+}
+,{
+label:`How It Works`,to:`/how-it-works`
+}
+,{
+label:`Verify`,to:`/verify`
+}
+];
+function wE(){
+let[e,t]=(0,y.useState)(!1),[n,r]=(0,y.useState)(!1),{
+pathname:i
+}
+=Fo();
+return(0,y.useEffect)(()=>r(!1),[i]),(0,y.useEffect)(()=>{
+let e=()=>t(window.scrollY>12);
+return e(),window.addEventListener(`scroll`,e,{
+passive:!0
+}
+),()=>window.removeEventListener(`scroll`,e)
+}
+,[]),(0,A.jsxs)($.header,{
+initial:{
+y:-20,opacity:0
+}
+,animate:{
+y:0,opacity:1
+}
+,transition:{
+duration:.6,delay:.1,ease:[.2,.7,.2,1]
+}
+,className:`fixed inset-x-0 top-0 z-50 transition-all duration-300 ${
+e||n?`border-b border-border bg-background/75 backdrop-blur-xl`:`border-b border-transparent`
+}
+`,children:[(0,A.jsxs)(`nav`,{
+className:`mx-auto flex h-16 max-w-7xl items-center justify-between px-5 lg:px-8`,"aria-label":`Main`,children:[(0,A.jsx)(gE,{
+
+}
+),(0,A.jsx)(`ul`,{
+className:`hidden items-center gap-1 md:flex`,children:CE.map(e=>(0,A.jsx)(`li`,{
+children:(0,A.jsx)(Os,{
+to:e.to,className:({
+isActive:e
+}
+)=>`rounded-full px-3.5 py-2 text-[13px] font-medium transition-colors ${
+e?`text-foreground`:`text-muted-foreground hover:text-foreground`
+}
+`,children:e.label
+}
+)
+}
+,e.to))
+}
+),(0,A.jsxs)(`div`,{
+className:`flex items-center gap-2`,children:[(0,A.jsx)(_E,{
+
+}
+),(0,A.jsx)(bE,{
+to:`/programs`,variant:`ghost`,size:`sm`,arrow:!1,className:`hidden lg:inline-flex`,children:`Explore Paths`
+}
+),(0,A.jsx)(bE,{
+to:`/skills`,size:`sm`,className:`hidden md:inline-flex`,children:`Get Certified`
+}
+),(0,A.jsx)(`button`,{
+onClick:()=>r(e=>!e),className:`flex h-9 w-9 items-center justify-center rounded-full border border-border md:hidden`,"aria-label":`Toggle menu`,"aria-expanded":n,children:n?(0,A.jsx)(In,{
+className:`h-4 w-4`
+}
+):(0,A.jsx)(wn,{
+className:`h-4 w-4`
+}
+)
+}
+)]
+}
+)]
+}
+),(0,A.jsx)(SE,{
+open:n
+}
+)]
+}
+)
+}
+var TE=e=>e.toLowerCase().replace(/&/g,` `).replace(/[^a-z0-9]+/g,`-`).replace(/^-+|-+$/g,``),EE=[{
+slug:`ai-product-management`,name:`AI Product Management`,role:`AI Product Manager`,area:`product`,image:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/09b351087_generated_image.png`,description:`Build verified proof across the core skills required for AI product management.`,skills:[`Product Discovery`,`User Research`,`AI Product Strategy`,`Product Requirements`,`Prioritization`,`Product Analytics`,`AI UX`,`Experimentation`,`Prompt Engineering`,`AI Prototyping`,`Product Launch`,`AI Product Case Study`]
+}
+,{
+slug:`ai-data-analytics`,name:`AI Data Analytics`,role:`Data Analyst`,area:`analytics`,image:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/9c50765b0_generated_image.png`,description:`Prove you can turn raw data into decisions — from SQL to predictive analytics.`,skills:[`SQL Fundamentals`,`Data Cleaning`,`Exploratory Data Analysis`,`Statistics for Analytics`,`Excel Analytics`,`Data Visualization`,`Python for Analytics`,`Business Analytics`,`Dashboard Development`,`Experimentation`,`Predictive Analytics`,`Data Analytics Case Study`]
+}
+,{
+slug:`executive-leadership`,name:`Executive Leadership`,role:`Executive Leader`,area:`leadership`,image:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/c01384239_generated_image.png`,description:`Certify the judgement, communication and strategic skills senior leaders are measured on.`,skills:[`Strategic Thinking`,`Decision Making`,`Stakeholder Management`,`Financial Acumen`,`Leading Teams`,`Change Management`,`Communication & Influence`,`OKRs & Goal Setting`,`AI Strategy for Leaders`,`Negotiation`,`Hiring & Talent`,`Leadership Case Study`]
+}
+,{
+slug:`digital-marketing`,name:`AI Digital Marketing`,role:`Digital Marketing Specialist`,area:`marketing`,image:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/83a806e9e_generated_image.png`,description:`Show you can research, reach and convert — across every modern marketing channel.`,skills:[`Market Research`,`Customer Segmentation`,`Content Strategy`,`SEO`,`Performance Marketing`,`Meta Advertising`,`Google Advertising`,`Marketing Analytics`,`Conversion Optimization`,`Email Marketing`,`AI Marketing Automation`,`Growth Strategy`]
+}
+,{
+slug:`performance-marketing`,name:`Performance Marketing`,role:`Performance Marketer`,area:`paid growth`,image:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/61c9ab37c_generated_image.png`,description:`Prove you can plan, run and scale paid campaigns that are accountable to numbers.`,skills:[`Funnel Strategy`,`Audience Targeting`,`Meta Advertising`,`Google Advertising`,`Creative Testing`,`Landing Page Optimization`,`Attribution Modeling`,`Marketing Analytics`,`Budget & Bidding Strategy`,`Retargeting`,`Scaling Campaigns`,`Performance Marketing Case Study`]
+}
+,{
+slug:`software-development`,name:`Software Development`,role:`Software Developer`,area:`engineering`,image:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/3ea248b29_generated_image.png`,description:`Certify the engineering fundamentals teams expect — from algorithms to system design.`,skills:[`Programming Fundamentals`,`Data Structures`,`Algorithms`,`Git & Version Control`,`Web Fundamentals`,`Frontend Development`,`Backend Development`,`Databases`,`API Design`,`Software Testing`,`System Design`,`Software Project`]
+}
+,{
+slug:`generative-ai`,name:`Generative AI`,role:`Generative AI Specialist`,area:`AI`,image:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/ac68e6509_generated_image.png`,description:`Prove you can design, build and evaluate real generative AI systems.`,skills:[`Prompt Engineering`,`LLM Fundamentals`,`RAG Systems`,`AI Agents`,`Fine-Tuning`,`Embeddings`,`Vector Databases`,`AI Evaluation`,`Multimodal AI`,`AI Safety & Guardrails`,`AI Product Integration`,`Generative AI Project`]
+}
+,{
+slug:`ai-automation`,name:`Generative AI & Automation`,role:`AI Automation Specialist`,area:`automation`,image:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/cc901df6c_generated_image.png`,description:`Certify that you can connect models, tools and APIs into automations that actually ship.`,skills:[`Prompt Engineering`,`LLM Fundamentals`,`RAG Systems`,`AI Agents`,`Workflow Automation`,`n8n Automation`,`API Integration`,`AI Evaluation`,`Vector Databases`,`AI Tool Orchestration`,`Multi-Agent Systems`,`AI Automation Project`]
+}
+,{
+slug:`business-analytics`,name:`Business Analytics`,role:`Business Analyst`,area:`business`,image:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/5dbe1242d_generated_image.png`,description:`Prove you can frame business problems, model them and recommend a decision.`,skills:[`Business Problem Framing`,`Requirements Gathering`,`Process Mapping`,`Excel Analytics`,`SQL Fundamentals`,`Data Visualization`,`KPI Design`,`Financial Analysis`,`Market Sizing`,`Stakeholder Management`,`Business Case Writing`,`Business Analytics Case Study`]
+}
+,{
+slug:`product-marketing`,name:`Product Marketing`,role:`Product Marketing Manager`,area:`go-to-market`,image:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/78b59d04f_generated_image.png`,description:`Certify the positioning, messaging and launch skills behind products people understand.`,skills:[`Market Research`,`Customer Segmentation`,`Positioning`,`Messaging`,`Competitive Analysis`,`Pricing Strategy`,`Go-To-Market Strategy`,`Sales Enablement`,`Product Launch`,`Content Strategy`,`Customer Insights`,`Product Marketing Case Study`]
+}
+],DE={
+"product-discovery":`Prove that you can identify, frame, and validate a meaningful product problem.`,"user-research":`Prove you can plan research, talk to users without leading them, and turn findings into insight.`,"ai-product-strategy":`Prove you can decide where AI creates real user value — and where it doesn't.`,"prompt-engineering":`Prove you can design, test and iterate prompts that produce reliable model output.`,"sql-fundamentals":`Prove you can query, join and aggregate data correctly to answer real questions.`
+}
+,OE=[{
+id:`know`,type:`KNOW`,title:`MCQs`,description:`Baseline knowledge — scenario-based multiple choice.`,duration:`15 min`
+}
+,{
+id:`think`,type:`THINK`,title:`Descriptive`,description:`Reasoning — explain how you'd approach a real problem.`,duration:`25 min`
+}
+,{
+id:`defend`,type:`DEFEND`,title:`AI Interview`,description:`Spoken understanding — defend your thinking to an AI interviewer.`,duration:`20 min`
+}
+,{
+id:`build`,type:`BUILD`,title:`Practical Project`,description:`Practical application — complete a focused real-world task.`,duration:`60–90 min`
+}
+],kE=EE.map(e=>({
+id:e.slug,...e,finalCredential:e.role,skills:e.skills.map(TE)
+}
+)),AE={
+
+}
+;
+kE.forEach(e=>{
+EE.find(t=>t.slug===e.slug).skills.forEach(t=>{
+let n=TE(t);
+AE[n]||(AE[n]={
+id:n,slug:n,name:t,programId:e.slug,category:e.name,area:e.area,description:DE[n]||`Prove you can apply ${
+t.toLowerCase()
+}
+ to real ${
+e.area
+}
+ work — assessed on knowledge, reasoning, spoken defence and a practical build.`,duration:`2–3 hours`,price:499,passScore:60,stages:OE,assignments:[{
+id:`${
+n
+}
+-build`,skillId:n,title:`${
+t
+}
+ practical brief`,type:`project`,duration:`60–90 min`
+}
+],programs:[]
+}
+),AE[n].programs.push(e.slug)
+}
+)
+}
+);
+var jE=Object.values(AE),ME=e=>kE.find(t=>t.slug===e),NE=e=>AE[e];
+function PE(){
+return(0,A.jsxs)(`footer`,{
+className:`border-t border-border bg-surface/40`,children:[(0,A.jsxs)(`div`,{
+className:`mx-auto grid max-w-7xl gap-12 px-5 py-16 lg:grid-cols-[1.4fr_1fr_1fr_1fr] lg:px-8`,children:[(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(gE,{
+
+}
+),(0,A.jsx)(`p`,{
+className:`mt-4 max-w-xs text-sm leading-relaxed text-muted-foreground`,children:`Skill certificates for people who already know the work. Get assessed, scored and certified — without another course.`
+}
+)]
+}
+),(0,A.jsx)(FE,{
+title:`Paths`,links:kE.slice(0,5).map(e=>({
+label:e.name,to:`/programs/${
+e.slug
+}
+`
+}
+))
+}
+),(0,A.jsx)(FE,{
+title:`More paths`,links:kE.slice(5).map(e=>({
+label:e.name,to:`/programs/${
+e.slug
+}
+`
+}
+))
+}
+),(0,A.jsx)(FE,{
+title:`Product`,links:[{
+label:`All skills`,to:`/skills`
+}
+,{
+label:`How it works`,to:`/how-it-works`
+}
+,{
+label:`Verify a certificate`,to:`/verify`
+}
+,{
+label:`FAQ`,to:`/faq`
+}
+]
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mx-auto flex max-w-7xl flex-col gap-2 border-t border-border px-5 py-6 text-xs text-muted-foreground sm:flex-row sm:justify-between lg:px-8`,children:[(0,A.jsxs)(`span`,{
+children:[`© `,new Date().getFullYear(),` AcceleratorX. Demo build — testimonials are demo profiles.`]
+}
+),(0,A.jsx)(`span`,{
+className:`font-mono`,children:`₹499 + GST per skill attempt`
+}
+)]
+}
+)]
+}
+)
+}
+function FE({
+title:e,links:t
+}
+){
+return(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(`h3`,{
+className:`font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground`,children:e
+}
+),(0,A.jsx)(`ul`,{
+className:`mt-4 space-y-2.5`,children:t.map(e=>(0,A.jsx)(`li`,{
+children:(0,A.jsx)(Ds,{
+to:e.to,className:`text-sm text-foreground/80 transition-colors hover:text-foreground`,children:e.label
+}
+)
+}
+,e.to))
+}
+)]
+}
+)
+}
+function IE(){
+let{
+pathname:e
+}
+=Fo();
+return(0,A.jsxs)(`div`,{
+className:`min-h-screen overflow-x-clip bg-background text-foreground`,children:[(0,A.jsx)(wE,{
+
+}
+),(0,A.jsx)($.main,{
+initial:{
+opacity:0
+}
+,animate:{
+opacity:1
+}
+,transition:{
+duration:.45,ease:[.2,.7,.2,1]
+}
+,children:(0,A.jsx)(ls,{
+
+}
+)
+}
+,e),(0,A.jsx)(PE,{
+
+}
+)]
+}
+)
+}
+function LE({
+children:e,className:t=``
+}
+){
+return(0,A.jsxs)(`div`,{
+className:`inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground ${
+t
+}
+`,children:[(0,A.jsx)(`span`,{
+className:`h-1.5 w-1.5 rounded-full bg-brand shadow-[0_0_10px_hsl(var(--glow))]`,"aria-hidden":!0
+}
+),e]
+}
+)
+}
+var RE=ME(`ai-product-management`),zE=3;
+function BE(){
+let[e,t]=(0,y.useState)(0);
+return(0,y.useEffect)(()=>{
+let e=0,n=setTimeout(function n(){
+e+=1,t(e),e<zE&&setTimeout(n,650)
+}
+,1900);
+return()=>clearTimeout(n)
+}
+,[]),(0,A.jsxs)(Ds,{
+to:`/programs/${
+RE.slug
+}
+`,className:`group block rounded-[22px] border border-border bg-surface p-5 shadow-lift transition-transform duration-500 hover:-translate-y-1`,"aria-label":`Open the AI Product Management path`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-start justify-between`,children:[(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground`,children:`Certification path`
+}
+),(0,A.jsx)(`div`,{
+className:`mt-1.5 text-[17px] font-semibold tracking-tight`,children:`AI Product Management`
+}
+),(0,A.jsx)(`div`,{
+className:`text-xs text-muted-foreground`,children:`12 skill certifications`
+}
+)]
+}
+),(0,A.jsx)(`span`,{
+className:`rounded-full border border-border bg-surface-2 px-2.5 py-1 font-mono text-[10px] text-muted-foreground`,children:`DEMO`
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-4 flex items-center justify-between font-mono text-[11px]`,children:[(0,A.jsxs)(`span`,{
+className:`text-foreground`,children:[e,` / 12 complete`]
+}
+),(0,A.jsxs)(`span`,{
+className:`text-muted-foreground`,children:[Math.round(e/12*100),`%`]
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-2 h-1 overflow-hidden rounded-full bg-surface-3`,children:(0,A.jsx)($.div,{
+className:`h-full rounded-full bg-gradient-to-r from-brand to-brand-2`,animate:{
+width:`${
+e/12*100
+}
+%`
+}
+,transition:{
+duration:.6
+}
+
+}
+)
+}
+),(0,A.jsxs)(`ol`,{
+className:`relative mt-5`,children:[(0,A.jsx)(`span`,{
+className:`absolute left-[9px] top-2 bottom-2 w-px bg-border`,"aria-hidden":!0
+}
+),(0,A.jsx)($.span,{
+className:`absolute left-[9px] top-2 w-px bg-success`,animate:{
+height:`${
+e/13*100
+}
+%`
+}
+,transition:{
+duration:.6
+}
+,"aria-hidden":!0
+}
+),RE.skills.map((t,n)=>{
+let r=n<e?`done`:n===e?`next`:`locked`;
+return(0,A.jsxs)($.li,{
+initial:{
+opacity:0,x:-6
+}
+,animate:{
+opacity:1,x:0
+}
+,transition:{
+delay:1+n*.05
+}
+,className:`relative flex items-center gap-3 py-[5px]`,children:[(0,A.jsx)(VE,{
+st:r
+}
+),(0,A.jsx)(`span`,{
+className:`w-5 font-mono text-[10px] text-muted-foreground`,children:String(n+1).padStart(2,`0`)
+}
+),(0,A.jsx)(`span`,{
+className:`truncate text-[13px] ${
+r===`locked`?`text-muted-foreground/70`:`text-foreground`
+}
+`,children:NE(t).name
+}
+),r===`next`&&(0,A.jsx)(`span`,{
+className:`ml-auto rounded-full bg-brand/15 px-2 py-0.5 font-mono text-[9px] text-brand`,children:`NEXT`
+}
+)]
+}
+,t)
+}
+),(0,A.jsxs)(`li`,{
+className:`relative mt-2 flex items-center gap-3 rounded-xl border border-dashed border-border bg-surface-2/60 px-0 py-2.5`,children:[(0,A.jsx)(`span`,{
+className:`relative z-10 ml-[1px] flex h-[18px] w-[18px] items-center justify-center rounded-[5px] border border-border bg-surface text-locked`,children:(0,A.jsx)(gn,{
+className:`h-2.5 w-2.5`
+}
+)
+}
+),(0,A.jsx)(`span`,{
+className:`text-[13px] font-medium`,children:`AI Product Manager`
+}
+),(0,A.jsxs)(`span`,{
+className:`ml-auto mr-3 flex items-center gap-1 font-mono text-[10px] text-muted-foreground`,children:[(0,A.jsx)(Cn,{
+className:`h-3 w-3`
+}
+),` Locked`]
+}
+)]
+}
+)]
+}
+)]
+}
+)
+}
+function VE({
+st:e
+}
+){
+return e===`done`?(0,A.jsx)(`span`,{
+className:`relative z-10 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-success text-background`,children:(0,A.jsx)(fn,{
+className:`h-2.5 w-2.5`,strokeWidth:3
+}
+)
+}
+):e===`next`?(0,A.jsx)(`span`,{
+className:`relative z-10 flex h-[18px] w-[18px] items-center justify-center rounded-full border border-brand bg-surface glow-brand`,children:(0,A.jsx)(`span`,{
+className:`h-1.5 w-1.5 rounded-full bg-brand`
+}
+)
+}
+):(0,A.jsx)(`span`,{
+className:`relative z-10 flex h-[18px] w-[18px] items-center justify-center rounded-full border border-border bg-surface text-locked`,children:(0,A.jsx)(Cn,{
+className:`h-2 w-2`
+}
+)
+}
+)
+}
+function HE({
+t:e
+}
+){
+return(0,A.jsxs)(`figure`,{
+className:`group/card rounded-2xl border border-border bg-surface p-4 transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/40 hover:shadow-soft`,children:[(0,A.jsxs)(`blockquote`,{
+className:`text-[13px] leading-relaxed text-foreground/90`,children:[`“`,e.quote,`”`]
+}
+),(0,A.jsxs)(`figcaption`,{
+className:`mt-3.5 flex items-center gap-2.5`,children:[(0,A.jsx)(`img`,{
+src:e.avatar,alt:`${
+e.name
+}
+, demo profile`,loading:`lazy`,className:`h-8 w-8 rounded-full object-cover opacity-80 blur-[0.4px] grayscale-[35%] transition-all duration-300 group-hover/card:opacity-100 group-hover/card:blur-0 group-hover/card:grayscale-0`
+}
+),(0,A.jsxs)(`div`,{
+className:`min-w-0`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center gap-1 text-[12px] font-medium`,children:[e.name,e.verified&&(0,A.jsx)(dn,{
+className:`h-3.5 w-3.5 text-brand`,"aria-label":`Verified certificate`
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`truncate text-[11px] text-muted-foreground transition-colors group-hover/card:text-foreground/80`,children:[e.role,` · `,e.skill]
+}
+)]
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-2.5 font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground/80`,children:`Demo profile`
+}
+)]
+}
+)
+}
+var UE=e=>`https://images.unsplash.com/${
+e
+}
+?w=160&h=160&fit=crop&crop=faces&q=80`,WE=[{
+id:`t1`,name:`Aria M.`,role:`Associate PM`,skill:`Product Discovery`,quote:`I'd been doing discovery for two years with nothing to show for it. The build stage made me prove it properly.`,avatar:UE(`photo-1494790108377-be9c29b29330`),verified:!0,demo:!0,result:`Added to portfolio`
+}
+,{
+id:`t2`,name:`Daniel K.`,role:`Data Analyst`,skill:`SQL Fundamentals`,quote:`No videos to sit through. Straight into questions that felt like real work.`,avatar:UE(`photo-1507003211169-0a1dd7228f2d`),verified:!0,demo:!0,result:`Scored 84%`
+}
+,{
+id:`t3`,name:`Sofia R.`,role:`Marketing Lead`,skill:`Performance Marketing`,quote:`The AI interview was harder than I expected — in a good way. It pushed on the why.`,avatar:UE(`photo-1438761681033-6461ffad8d80`),verified:!0,demo:!0
+}
+,{
+id:`t4`,name:`Marcus L.`,role:`Career Switcher`,skill:`Python for Analytics`,quote:`Self-taught for a year. Finally something that measures what I can actually do.`,avatar:UE(`photo-1472099645785-5658abf4ff4e`),verified:!1,demo:!0,result:`3 / 12 on path`
+}
+,{
+id:`t5`,name:`Leah T.`,role:`Product Designer`,skill:`AI UX`,quote:`Watching the path fill up is weirdly motivating. I booked the next skill the same day.`,avatar:UE(`photo-1534528741775-53994a69daeb`),verified:!0,demo:!0
+}
+,{
+id:`t6`,name:`Ethan W.`,role:`Software Engineer`,skill:`System Design`,quote:`The practical brief was specific enough to be fair and open enough to show judgement.`,avatar:UE(`photo-1500648767791-00dcc994a43e`),verified:!0,demo:!0,result:`Scored 81%`
+}
+,{
+id:`t7`,name:`Nora B.`,role:`Student`,skill:`Prompt Engineering`,quote:`A few hours on a Saturday and I had a certificate with a verifiable ID. That's it.`,avatar:UE(`photo-1544005313-94ddf0286df2`),verified:!1,demo:!0
+}
+,{
+id:`t8`,name:`Jonas P.`,role:`Growth Manager`,skill:`Experimentation`,quote:`Clear about what's being measured at every stage. No black box.`,avatar:UE(`photo-1506794778202-cad84cf45f1d`),verified:!0,demo:!0
+}
+],GE=WE.filter((e,t)=>t%2==0),KE=WE.filter((e,t)=>t%2==1);
+function qE({
+items:e,dir:t,className:n=``
+}
+){
+return(0,A.jsx)(`div`,{
+className:`overflow-hidden ${
+n
+}
+`,children:(0,A.jsx)(`div`,{
+className:`stream-track flex flex-col gap-3 ${
+t===`up`?`stream-up`:`stream-down`
+}
+`,children:[...e,...e].map((t,n)=>(0,A.jsx)(`div`,{
+"aria-hidden":n>=e.length,children:(0,A.jsx)(HE,{
+t
+}
+)
+}
+,t.id+n))
+}
+)
+}
+)
+}
+function JE(){
+let[e,t]=(0,y.useState)(!1);
+return(0,A.jsxs)(`section`,{
+"aria-label":`What people are saying`,className:`stream-panel rounded-[22px] border border-border bg-review p-4 ${
+e?`is-paused`:``
+}
+`,onTouchStart:()=>t(e=>!e),children:[(0,A.jsxs)(`div`,{
+className:`flex items-center justify-between px-1 pb-3`,children:[(0,A.jsx)(`h2`,{
+className:`font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground`,children:`What people are saying`
+}
+),(0,A.jsxs)(`span`,{
+className:`flex items-center gap-1.5 font-mono text-[10px] text-muted-foreground`,children:[(0,A.jsx)(`span`,{
+className:`h-1.5 w-1.5 animate-pulse rounded-full bg-success`
+}
+),` Live`]
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mask-fade-y grid h-[300px] grid-cols-1 gap-3 sm:grid-cols-2 md:h-[420px]`,children:[(0,A.jsx)(qE,{
+items:GE,dir:`up`
+}
+),(0,A.jsx)(qE,{
+items:KE,dir:`down`,className:`hidden sm:block`
+}
+)]
+}
+)]
+}
+)
+}
+var YE=[[jE.length,`Skill certifications`],[kE.length,`Role credentials`],[4,`Assessment stages`]];
+function XE(){
+return(0,A.jsx)(`div`,{
+className:`grid grid-cols-3 rounded-[22px] border border-border bg-surface py-4`,children:YE.map(([e,t],n)=>(0,A.jsxs)(`div`,{
+className:`px-4 sm:px-5 ${
+n?`border-l border-border`:``
+}
+`,children:[(0,A.jsx)(`div`,{
+className:`font-heading text-3xl font-semibold tracking-[-0.04em]`,children:e
+}
+),(0,A.jsx)(`div`,{
+className:`mt-0.5 font-mono text-[9.5px] uppercase leading-snug tracking-[0.08em] sm:tracking-[0.14em] text-muted-foreground`,children:t
+}
+)]
+}
+,t))
+}
+)
+}
+var ZE=[.2,.7,.2,1],QE=e=>({
+initial:{
+opacity:0,y:18,filter:`blur(10px)`
+}
+,animate:{
+opacity:1,y:0,filter:`blur(0px)`
+}
+,transition:{
+duration:.9,delay:e,ease:ZE
+}
+
+}
+);
+function $E(){
+return(0,A.jsxs)(`section`,{
+className:`relative overflow-hidden pt-28 sm:pt-32 lg:pt-36`,children:[(0,A.jsxs)($.div,{
+initial:{
+opacity:0
+}
+,animate:{
+opacity:1
+}
+,transition:{
+duration:1.2
+}
+,className:`pointer-events-none absolute inset-0`,"aria-hidden":!0,children:[(0,A.jsx)(`div`,{
+className:`absolute inset-0 bg-grid mask-radial opacity-70`
+}
+),(0,A.jsx)(`div`,{
+className:`absolute left-1/2 top-[-20%] h-[640px] w-[900px] -translate-x-1/2 rounded-full bg-brand/10 blur-[120px]`
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`relative mx-auto grid max-w-[1320px] gap-14 px-5 pb-20 lg:px-8 xl:grid-cols-[0.82fr_1.18fr] xl:gap-10`,children:[(0,A.jsxs)(`div`,{
+className:`xl:pt-10`,children:[(0,A.jsx)($.div,{
+...QE(.2),children:(0,A.jsx)(LE,{
+children:`AcceleratorX Skill Certificates`
+}
+)
+}
+),(0,A.jsxs)($.h1,{
+...QE(.32),className:`mt-6 text-balance font-heading text-[44px] font-semibold leading-[0.95] tracking-[-0.045em] sm:text-7xl xl:text-[76px]`,children:[`Get certified.`,(0,A.jsx)(`span`,{
+className:`block font-display text-[1.06em] font-normal italic tracking-[-0.02em] text-muted-foreground`,children:`Without taking`
+}
+),(0,A.jsx)(`span`,{
+className:`block`,children:`another course.`
+}
+)]
+}
+),(0,A.jsx)($.p,{
+...QE(.46),className:`mt-7 max-w-md text-pretty text-lg leading-relaxed text-muted-foreground`,children:`Already know the skill? Get assessed, scored, and certified in just a few hours — without sitting through another course.`
+}
+),(0,A.jsxs)($.div,{
+...QE(.58),className:`mt-9 flex flex-col gap-3 sm:flex-row`,children:[(0,A.jsx)(bE,{
+to:`/skills/product-discovery`,size:`lg`,children:`Get Certified`
+}
+),(0,A.jsx)(bE,{
+to:`/programs`,size:`lg`,variant:`outline`,arrow:!1,children:`Explore certification paths`
+}
+)]
+}
+),(0,A.jsxs)($.p,{
+...QE(.68),className:`mt-6 font-mono text-xs text-muted-foreground`,children:[`₹499 + GST `,(0,A.jsx)(`span`,{
+className:`mx-2 opacity-40`,children:`·`
+}
+),` No course required `,(0,A.jsx)(`span`,{
+className:`mx-2 opacity-40`,children:`·`
+}
+),` Skill-based assessment`]
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`grid gap-5 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]`,children:[(0,A.jsx)($.div,{
+...QE(.8),children:(0,A.jsx)(BE,{
+
+}
+)
+}
+),(0,A.jsxs)(`div`,{
+className:`flex flex-col gap-5`,children:[(0,A.jsx)($.div,{
+...QE(1.25),className:`order-2 md:order-1`,children:(0,A.jsx)(JE,{
+
+}
+)
+}
+),(0,A.jsx)($.div,{
+...QE(1.45),className:`order-1 md:order-2`,children:(0,A.jsx)(XE,{
+
+}
+)
+}
+)]
+}
+)]
+}
+)]
+}
+)]
+}
+)
+}
+function eD({
+children:e,delay:t=0,y:n=24,className:r=``,as:i=`div`,once:a=!0
+}
+){
+let o=BT(),s=$[i]||$.div;
+return(0,A.jsx)(s,{
+className:r,initial:o?{
+opacity:0
+}
+:{
+opacity:0,y:n,filter:`blur(8px)`
+}
+,whileInView:{
+opacity:1,y:0,filter:`blur(0px)`
+}
+,viewport:{
+once:a,margin:`-80px`
+}
+,transition:{
+duration:.8,delay:t,ease:[.2,.7,.2,1]
+}
+,children:e
+}
+)
+}
+function tD({
+eyebrow:e,title:t,sub:n,align:r=`left`,className:i=``
+}
+){
+let a=r===`center`;
+return(0,A.jsxs)(`div`,{
+className:`${
+a?`mx-auto text-center`:``
+}
+ max-w-3xl ${
+i
+}
+`,children:[e&&(0,A.jsx)(eD,{
+children:(0,A.jsx)(LE,{
+children:e
+}
+)
+}
+),(0,A.jsx)(eD,{
+delay:.05,children:(0,A.jsx)(`h2`,{
+className:`mt-5 text-balance font-heading text-4xl font-semibold leading-[1.02] tracking-[-0.035em] sm:text-5xl lg:text-6xl`,children:t
+}
+)
+}
+),n&&(0,A.jsx)(eD,{
+delay:.12,children:(0,A.jsx)(`p`,{
+className:`mt-5 text-pretty text-lg leading-relaxed text-muted-foreground ${
+a?`mx-auto`:``
+}
+ max-w-xl`,children:n
+}
+)
+}
+)]
+}
+)
+}
+var nD={
+"media.base44.com":`/images/public/`,"static.wixstatic.com":`/media/`
+}
+,rD={
+OPTIMIZED:`optimized`,ORIGINAL:`original`,FALLBACK:`fallback`
+}
+,iD=[1,2,3],aD=6e3;
+function oD(e){
+let t={
+
+}
+,n={
+
+}
+;
+for(let[r,i]of Object.entries(e))r.startsWith(`data-`)?t[r]=i:n[r]=i;
+return{
+wrapperProps:t,imageProps:n
+}
+
+}
+function sD(e,t,n){
+let r=new Set((e||``).split(/\s+/)),i=new Set(n.split(/\s+/));
+return t.split(/\s+/).filter(e=>![`inline-block`,`relative`].includes(e)||!i.has(e)||r.has(e)).join(` `)
+}
+function cD(e){
+try{
+let t=new URL(e);
+if(t.protocol!==`https:`||t.username||t.password||t.port&&t.port!==`443`)return null;
+let n=nD[t.hostname];
+if(!n)return null;
+let r=t.pathname.match(/^(.*)\/v1\/(?:fill|fit)\/[^/]+\/[^/]+$/i),i=r?r[1]:t.pathname,a=i.split(`/`).pop();
+return!i.startsWith(n)||!a||!/\.[a-z0-9]+$/i.test(a)||/\.svg$/i.test(a)?null:{
+baseUrl:`${
+t.origin
+}
+${
+i
+}
+`,filename:a
+}
+
+}
+catch{
+return null
+}
+
+}
+var lD=e=>Math.min(Math.max(Math.round(e),1),aD),uD=e=>Math.min(1,Math.max(0,e));
+function dD({
+baseUrl:e,filename:t
+}
+,{
+width:n,height:r,crop:i,focalPoint:a,quality:o
+}
+){
+let s=[`w_${
+lD(n)
+}
+`,`h_${
+lD(r||n)
+}
+`];
+i&&s.push(a?`fp_${
+uD(a.x).toFixed(2)
+}
+_${
+uD(a.y).toFixed(2)
+}
+`:`al_c`),s.push(`q_${
+o
+}
+`,`usm_0.66_1.00_0.01`,`enc_webp`,`quality_auto`);
+let c=/\.gif$/i.test(t)?t:t.replace(/\.[a-z0-9]+$/i,``)+`.webp`;
+return`${
+e
+}
+/v1/${
+i?`fill`:`fit`
+}
+/${
+s.join(`,`)
+}
+/${
+c
+}
+`
+}
+function fD(e,t){
+return iD.map(n=>`${
+dD(e,{
+...t,width:t.width*n,height:t.height?t.height*n:void 0
+}
+)
+}
+ ${
+n
+}
+x`).join(`, `)
+}
+function pD(e,t){
+return t?.baseUrl||e
+}
+function mD(e){
+return e===rD.OPTIMIZED?rD.ORIGINAL:rD.FALLBACK
+}
+function hD(e){
+let[t,n]=y.useState(null);
+return y.useLayoutEffect(()=>{
+let t=e.current;
+if(!t)return;
+let r=t.getBoundingClientRect();
+n({
+width:r.width,height:r.height
+}
+);
+let i=new ResizeObserver(([e])=>{
+let{
+width:t,height:r
+}
+=e.contentRect;
+n({
+width:t,height:r
+}
+)
+}
+);
+return i.observe(t),()=>i.disconnect()
+}
+,[e]),t
+}
+function gD({
+parsed:e,fittingType:t,focalPoint:n,quality:r,className:i,onLoad:a,onSourceChange:o
+}
+,s){
+let c=y.useRef(null),l=y.useRef(null),u=hD(c),[d,f]=y.useState(!1);
+y.useImperativeHandle(s,()=>l.current),y.useEffect(()=>f(!1),[e.baseUrl]),y.useEffect(()=>{
+let e=c.current,t=t=>o(t.detail.src,sD(i,e.className,ai(`inline-block relative`,i)));
+return e.addEventListener(`base44:image-replace`,t),()=>e.removeEventListener(`base44:image-replace`,t)
+}
+,[i,o]);
+let p=t!==`fit`;
+return{
+wrapperRef:c,imgRef:l,loaded:d,options:u&&{
+width:u.width||1024,height:u.height||void 0,crop:p,focalPoint:p?n:void 0,quality:r
+}
+,handleLoad:e=>{
+f(!0),a?.(e)
+}
+
+}
+
+}
+var _D=y.forwardRef(({
+src:e,parsed:t,fittingType:n,focalPoint:r,quality:i,className:a,style:o,aspectRatio:s,onLoad:c,onSourceChange:l,...u
+}
+,d)=>{
+let{
+wrapperRef:f,imgRef:p,loaded:m,options:h,handleLoad:g
+}
+=gD({
+parsed:t,fittingType:n,focalPoint:r,quality:i,className:a,onLoad:c,onSourceChange:l
+}
+,d),{
+wrapperProps:_,imageProps:v
+}
+=oD(u);
+return(0,A.jsx)(`span`,{
+ref:f,className:ai(`inline-block relative`,a),style:{
+aspectRatio:s,...o
+}
+,..._,"data-base44-image":``,"data-base44-image-src":e,children:(0,A.jsxs)(`span`,{
+"data-source-location":void 0,className:`block relative w-full h-full overflow-hidden`,children:[h&&!m&&(0,A.jsx)(`img`,{
+"data-source-location":void 0,src:dD(t,{
+...h,width:20,height:h.height?Math.max(1,Math.round(20*h.height/h.width)):void 0,quality:20
+}
+),alt:``,"aria-hidden":`true`,className:`w-full h-full inset-0 absolute`,style:{
+objectFit:n===`fit`?`contain`:`cover`,filter:`blur(10px)`,transform:`scale(1.1)`
+}
+
+}
+),h&&(0,A.jsx)(`img`,{
+"data-source-location":void 0,ref:p,src:dD(t,h),srcSet:fD(t,h),loading:`lazy`,className:ai(`w-full h-full inset-0 absolute`,n===`fit`?`object-contain`:`object-cover`),onLoad:g,...v
+}
+)]
+}
+)
+}
+)
+}
+);
+_D.displayName=`ResponsiveImage`;
+var vD=`https://static.wixstatic.com/media/12d367_4f26ccd17f8f4e3a8958306ea08c2332~mv2.png`,yD=y.forwardRef(({
+src:e,fittingType:t=`fill`,originWidth:n,originHeight:r,focalPointX:i,focalPointY:a,quality:o=90,onError:s,...c
+}
+,l)=>{
+let[u,d]=y.useState(null),f=u?.source===e?u:null,p=f?f.value:e,m=(t,n)=>d({
+source:e,value:t,className:n,sourceClassName:c.className
+}
+);
+y.useEffect(()=>d(null),[e]);
+let h=p&&p!==vD?cD(p):null,g=h?rD.OPTIMIZED:rD.ORIGINAL,[_,v]=y.useState({
+src:p,mode:g
+}
+),b=_.src===p?_.mode:g;
+y.useEffect(()=>{
+v({
+src:p,mode:g
+}
+)
+}
+,[p,g]);
+let x=e=>{
+if(b===rD.FALLBACK)return;
+let t=mD(b);
+v({
+src:p,mode:t
+}
+),t===rD.FALLBACK&&s?.(e)
+}
+,S={
+...c,className:f&&f.sourceClassName===c.className?f.className:c.className,onError:x
+}
+;
+if(!p)return(0,A.jsx)(`img`,{
+ref:l,src:vD,...S,"data-empty-image":!0
+}
+);
+let C=b===rD.OPTIMIZED?h:null;
+if(!C){
+let e=b===rD.FALLBACK,t=e?vD:pD(p,h);
+return(0,A.jsx)(`img`,{
+ref:l,src:t,...S,"data-error-image":e||void 0
+}
+)
+}
+let w=typeof i==`number`&&typeof a==`number`?{
+x:i,y:a
+}
+:void 0,T=n&&r?`${
+n
+}
+ / ${
+r
+}
+`:void 0;
+return(0,A.jsx)(_D,{
+ref:l,src:p,parsed:C,onSourceChange:m,fittingType:t,focalPoint:w,quality:o,aspectRatio:T,...S
+}
+)
+}
+);
+yD.displayName=`Image`;
+var bD=`ax_progress_v1`,xD=`ax-progress`,SD={
+certified:{
+
+}
+,attempts:{
+
+}
+,inProgress:{
+
+}
+,roleCerts:{
+
+}
+,certificates:{
+
+}
+,candidate:``
+}
+,CD=null,wD=()=>{
+if(CD)return CD;
+try{
+CD={
+...SD,...JSON.parse(localStorage.getItem(bD)||`{
+
+}
+`)
+}
+
+}
+catch{
+CD={
+...SD
+}
+
+}
+return CD
+}
+,TD=e=>{
+CD=e,localStorage.setItem(bD,JSON.stringify(e)),window.dispatchEvent(new Event(xD))
+}
+,ED=e=>(window.addEventListener(xD,e),()=>window.removeEventListener(xD,e)),DD=()=>(0,y.useSyncExternalStore)(ED,wD),OD=wD,kD=e=>e+`-`+Math.random().toString(36).slice(2,8).toUpperCase();
+function AD(e){
+TD({
+...wD(),candidate:e
+}
+)
+}
+function jD(e,t){
+let n=wD();
+TD({
+...n,inProgress:{
+...n.inProgress,[e]:t
+}
+
+}
+)
+}
+function MD(e,t){
+let n=wD(),r={
+...n.inProgress
+}
+;
+delete r[e];
+let i={
+...n,inProgress:r,attempts:{
+...n.attempts,[e]:t
+}
+
+}
+;
+if(t.passed){
+let r=kD(`AX`),a={
+id:r,type:`skill`,skillId:e,candidate:n.candidate||`Demo Candidate`,score:t.score,issueDate:new Date().toISOString(),verificationStatus:`verified-demo`
+}
+;
+i.certificates={
+...n.certificates,[r]:a
+}
+,i.certified={
+...n.certified,[e]:{
+certId:r,score:t.score,date:a.issueDate
+}
+
+}
+,i.attempts[e]={
+...t,certId:r
+}
+
+}
+return TD(i),i.attempts[e]
+}
+function ND(e){
+let t=ME(e),n=wD(),r=t.skills.find(e=>!n.certified[e]);
+if(!r)return;
+let i=70+Math.floor(Math.random()*25);
+MD(r,{
+score:i,passed:!0,breakdown:{
+knowledge:i,reasoning:i,interview:i,practical:i
+}
+,simulated:!0,date:new Date().toISOString()
+}
+)
+}
+function PD(e){
+let t=ME(e),n=wD();
+if(n.roleCerts[e])return n.roleCerts[e];
+let r=t.skills.map(e=>n.certified[e]?.score||0),i=kD(`AXR`),a={
+id:i,type:`role`,programId:e,candidate:n.candidate||`Demo Candidate`,completedSkills:t.skills.length,totalSkills:t.skills.length,score:Math.round(r.reduce((e,t)=>e+t,0)/r.length),issueDate:new Date().toISOString(),verificationStatus:`verified-demo`
+}
+;
+return TD({
+...n,roleCerts:{
+...n.roleCerts,[e]:i
+}
+,certificates:{
+...n.certificates,[i]:a
+}
+
+}
+),i
+}
+function FD(e){
+let t=ME(e),n=wD(),r={
+...n.certified
+}
+,i={
+...n.attempts
+}
+;
+t.skills.forEach(e=>{
+delete r[e],delete i[e]
+}
+);
+let a={
+...n.roleCerts
+}
+;
+delete a[e],TD({
+...n,certified:r,attempts:i,roleCerts:a
+}
+)
+}
+function ID(e,t){
+let n=ME(e);
+return n.skills.map((e,r)=>{
+if(t.certified[e])return`certified`;
+let i=t.attempts[e];
+return r===0||t.certified[n.skills[r-1]]?t.inProgress[e]===void 0?i&&!i.passed?`completed`:`available`:`in_progress`:`locked`
+}
+)
+}
+function LD(e,t){
+let n=NE(e);
+if(t.certified[e])return{
+status:`certified`
+}
+;
+let r=null;
+for(let i of n.programs){
+let n=ME(i),a=n.skills.indexOf(e),o=ID(i,t)[a];
+if(o!==`locked`)return{
+status:o
+}
+;
+r||={
+program:n,prev:NE(n.skills[a-1])
+}
+
+}
+return{
+status:`locked`,blocker:r
+}
+
+}
+var RD=e=>wD().certificates[e?.toUpperCase()]||zD[e?.toUpperCase()],zD={
+"AX-DEMO78":{
+id:`AX-DEMO78`,type:`skill`,skillId:`ai-product-strategy`,candidate:`Demo Candidate`,score:78,issueDate:`2026-09-01T10:00:00.000Z`,verificationStatus:`demo`
+}
+
+}
+;
+function BD({
+program:e,tall:t
+}
+){
+let n=DD(),r=e.skills.filter(e=>n.certified[e]).length;
+return(0,A.jsxs)(Ds,{
+to:`/programs/${
+e.slug
+}
+`,className:`group relative flex flex-col justify-end overflow-hidden rounded-[26px] border border-border bg-surface transition-all duration-500 hover:-translate-y-1 hover:shadow-lift ${
+t?`min-h-[440px]`:`min-h-[400px]`
+}
+`,children:[(0,A.jsxs)(`div`,{
+className:`absolute inset-0 overflow-hidden`,children:[(0,A.jsx)(yD,{
+src:e.image,alt:`${
+e.role
+}
+ at work`,className:`h-full w-full object-cover opacity-90 transition-transform duration-[1200ms] ease-out group-hover:scale-[1.05] group-hover:-translate-y-2`
+}
+),(0,A.jsx)(`div`,{
+className:`absolute inset-0 bg-gradient-to-t from-surface via-surface/80 to-surface/0`
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`relative p-6 sm:p-7`,children:[(0,A.jsx)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground`,children:`12 skill certifications`
+}
+),(0,A.jsx)(`h3`,{
+className:`mt-2 text-2xl font-semibold tracking-[-0.03em] sm:text-[28px]`,children:e.name
+}
+),(0,A.jsx)(`div`,{
+className:`grid grid-rows-[0fr] opacity-0 transition-all duration-500 group-hover:grid-rows-[1fr] group-hover:opacity-100 group-focus-visible:grid-rows-[1fr] group-focus-visible:opacity-100`,children:(0,A.jsxs)(`ul`,{
+className:`overflow-hidden`,children:[e.skills.slice(0,4).map((e,t)=>(0,A.jsxs)(`li`,{
+className:`flex items-center gap-2.5 pt-2 text-[13px] text-foreground/85`,children:[(0,A.jsx)(`span`,{
+className:`h-1.5 w-1.5 rounded-full ${
+n.certified[e]?`bg-success`:t===r?`bg-brand`:`bg-locked`
+}
+`
+}
+),NE(e).name]
+}
+,e)),(0,A.jsx)(`li`,{
+className:`pt-2 font-mono text-[11px] text-muted-foreground`,children:`+ 8 more skills`
+}
+)]
+}
+)
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-5 flex items-center gap-3`,children:[(0,A.jsx)(`div`,{
+className:`h-1 flex-1 overflow-hidden rounded-full bg-foreground/10`,children:(0,A.jsx)(`div`,{
+className:`h-full rounded-full bg-gradient-to-r from-brand to-brand-2 transition-all duration-700 group-hover:opacity-100`,style:{
+width:`${
+Math.max(r/12*100,2)
+}
+%`
+}
+
+}
+)
+}
+),(0,A.jsxs)(`span`,{
+className:`font-mono text-[11px] text-muted-foreground`,children:[r,` / 12`]
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-5 flex items-end justify-between gap-4 border-t border-border pt-4`,children:[(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground`,children:`Final credential`
+}
+),(0,A.jsx)(`div`,{
+className:`mt-1 text-sm font-medium`,children:e.role
+}
+)]
+}
+),(0,A.jsx)(`span`,{
+className:`flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface transition-all duration-500 group-hover:rotate-45 group-hover:border-foreground group-hover:bg-foreground group-hover:text-background`,children:(0,A.jsx)(ln,{
+className:`h-4 w-4`
+}
+)
+}
+)]
+}
+)]
+}
+)]
+}
+)
+}
+function VD({
+program:e
+}
+){
+let t=(0,y.useRef)(null),n=BT(),{
+scrollYProgress:r
+}
+=kT({
+target:t,offset:[`start end`,`end start`]
+}
+),i=RT(r,[0,1],n?[0,0]:[-40,40]),a=DD(),o=e.skills.filter(e=>a.certified[e]).length;
+return(0,A.jsx)(eD,{
+children:(0,A.jsxs)(`div`,{
+ref:t,className:`group relative grid overflow-hidden rounded-[30px] border border-border bg-surface lg:grid-cols-[1.1fr_1fr]`,children:[(0,A.jsxs)(`div`,{
+className:`relative h-[320px] overflow-hidden lg:h-auto lg:min-h-[560px]`,children:[(0,A.jsx)($.div,{
+style:{
+y:i
+}
+,className:`absolute inset-[-60px]`,children:(0,A.jsx)(yD,{
+src:e.image,alt:`AI product manager mapping a product flow`,className:`h-full w-full object-cover transition-transform duration-[1400ms] group-hover:scale-[1.04]`
+}
+)
+}
+),(0,A.jsx)(`div`,{
+className:`absolute inset-0 bg-gradient-to-t from-surface via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:via-transparent lg:to-surface`
+}
+),(0,A.jsx)(`div`,{
+className:`absolute bottom-5 left-5 rounded-full border border-border bg-surface/80 px-3 py-1.5 font-mono text-[10px] uppercase tracking-[0.16em] backdrop-blur-md`,children:`Most chosen path`
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`relative flex flex-col p-7 sm:p-10`,children:[(0,A.jsx)(`div`,{
+className:`font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground`,children:`12 skill certifications · 1 role credential`
+}
+),(0,A.jsx)(`h3`,{
+className:`mt-3 text-4xl font-semibold tracking-[-0.04em] sm:text-5xl`,children:e.name
+}
+),(0,A.jsx)(`p`,{
+className:`mt-4 max-w-md text-muted-foreground`,children:e.description
+}
+),(0,A.jsx)(`ol`,{
+className:`mt-7 grid grid-cols-2 gap-x-6 gap-y-2`,children:e.skills.map((e,t)=>(0,A.jsxs)(`li`,{
+className:`flex items-center gap-2 text-[13px]`,children:[(0,A.jsx)(`span`,{
+className:`w-5 font-mono text-[10px] text-muted-foreground`,children:String(t+1).padStart(2,`0`)
+}
+),(0,A.jsx)(`span`,{
+className:a.certified[e]?`text-success`:t===o?`text-foreground`:`text-muted-foreground`,children:NE(e).name
+}
+)]
+}
+,e))
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-8 flex items-center gap-3`,children:[(0,A.jsx)(`div`,{
+className:`h-1 flex-1 overflow-hidden rounded-full bg-surface-3`,children:(0,A.jsx)($.div,{
+initial:{
+width:0
+}
+,whileInView:{
+width:`${
+Math.max(o/12*100,2)
+}
+%`
+}
+,transition:{
+duration:1.2,delay:.3
+}
+,className:`h-full rounded-full bg-gradient-to-r from-brand to-brand-2`
+}
+)
+}
+),(0,A.jsxs)(`span`,{
+className:`font-mono text-xs text-muted-foreground`,children:[o,` / 12 complete`]
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-auto flex flex-col gap-5 pt-8 sm:flex-row sm:items-center sm:justify-between`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center gap-3`,children:[(0,A.jsx)(`span`,{
+className:`flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface-2`,children:(0,A.jsx)(gn,{
+className:`h-4 w-4 text-brand`
+}
+)
+}
+),(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground`,children:`Final credential`
+}
+),(0,A.jsxs)(`div`,{
+className:`flex items-center gap-1.5 text-sm font-medium`,children:[e.role,` `,(0,A.jsx)(Cn,{
+className:`h-3 w-3 text-muted-foreground`
+}
+)]
+}
+)]
+}
+)]
+}
+),(0,A.jsx)(bE,{
+to:`/programs/${
+e.slug
+}
+`,children:`Explore path`
+}
+)]
+}
+)]
+}
+),(0,A.jsx)(Ds,{
+to:`/programs/${
+e.slug
+}
+`,className:`absolute inset-0 lg:hidden`,"aria-label":`Explore ${
+e.name
+}
+`
+}
+)]
+}
+)
+}
+)
+}
+var HD=[`lg:col-span-7`,`lg:col-span-5`,`lg:col-span-5`,`lg:col-span-7`,`lg:col-span-7`,`lg:col-span-5`,`lg:col-span-4`,`lg:col-span-4`,`lg:col-span-4`];
+function UD(){
+let[e,...t]=kE;
+return(0,A.jsx)(`section`,{
+id:`collections`,className:`relative py-24 lg:py-32`,children:(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-7xl px-5 lg:px-8`,children:[(0,A.jsx)(tD,{
+eyebrow:`Certification collections`,title:`Build proof for the role you want.`,sub:`Choose a certification path and build verified proof one skill at a time.`
+}
+),(0,A.jsx)(`div`,{
+className:`mt-14`,children:(0,A.jsx)(VD,{
+program:e
+}
+)
+}
+),(0,A.jsx)(`div`,{
+className:`mt-5 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-12`,children:t.map((e,t)=>(0,A.jsx)(eD,{
+delay:t%3*.08,className:HD[t],children:(0,A.jsx)(BD,{
+program:e,tall:t<6
+}
+)
+}
+,e.slug))
+}
+)]
+}
+)
+}
+)
+}
+var WD=[{
+n:`01`,title:`Choose a path`,body:`Choose the role or career area you want to build proof for.`
+}
+,{
+n:`02`,title:`Certify your skills`,body:`Complete individual skill assessments — knowledge, reasoning, interview and a practical build.`
+}
+,{
+n:`03`,title:`Build your progress`,body:`Each certification moves you closer to your role credential.`
+}
+,{
+n:`04`,title:`Unlock the role`,body:`Complete the required skills and unlock the final role-level certification.`
+}
+];
+function GD(){
+return(0,A.jsx)(`section`,{
+className:`border-y border-border bg-surface/50 py-24 lg:py-32`,children:(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-7xl px-5 lg:px-8`,children:[(0,A.jsx)(tD,{
+eyebrow:`How the system works`,title:`Four steps from skill to role.`
+}
+),(0,A.jsxs)(`div`,{
+className:`relative mt-16 grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-6`,children:[(0,A.jsx)($.div,{
+className:`absolute left-0 right-0 top-[27px] hidden h-px origin-left bg-gradient-to-r from-brand via-brand-2 to-border lg:block`,initial:{
+scaleX:0
+}
+,whileInView:{
+scaleX:1
+}
+,viewport:{
+once:!0,margin:`-100px`
+}
+,transition:{
+duration:1.6,ease:[.2,.7,.2,1]
+}
+
+}
+),WD.map((e,t)=>(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:20
+}
+,whileInView:{
+opacity:1,y:0
+}
+,viewport:{
+once:!0,margin:`-100px`
+}
+,transition:{
+duration:.7,delay:.2+t*.18
+}
+,className:`relative`,children:[(0,A.jsx)(`div`,{
+className:`relative z-10 flex h-14 w-14 items-center justify-center rounded-2xl border border-border bg-background font-mono text-sm shadow-soft`,children:e.n
+}
+),(0,A.jsx)(`h3`,{
+className:`mt-6 text-xl font-semibold tracking-tight`,children:e.title
+}
+),(0,A.jsx)(`p`,{
+className:`mt-2 max-w-xs text-[15px] leading-relaxed text-muted-foreground`,children:e.body
+}
+)]
+}
+,e.n))]
+}
+)]
+}
+)
+}
+)
+}
+var KD=ME(`ai-product-management`);
+function qD(){
+let e=(0,y.useRef)(null),{
+scrollYProgress:t
+}
+=kT({
+target:e,offset:[`start 0.65`,`end 0.75`]
+}
+),n=NT(t,{
+stiffness:120,damping:30
+}
+),[r,i]=(0,y.useState)(0);
+Lw(t,`change`,e=>i(Math.min(12,Math.floor(e*13.2))));
+let a=r>=12;
+return(0,A.jsx)(`section`,{
+className:`py-24 lg:py-32`,children:(0,A.jsxs)(`div`,{
+className:`mx-auto grid max-w-7xl gap-14 px-5 lg:grid-cols-[1fr_1.1fr] lg:px-8`,children:[(0,A.jsxs)(`div`,{
+className:`lg:sticky lg:top-28 lg:h-fit`,children:[(0,A.jsx)(LE,{
+children:`Interactive skill path`
+}
+),(0,A.jsxs)(`h2`,{
+className:`mt-5 text-balance text-4xl font-semibold leading-[1.02] tracking-[-0.035em] sm:text-5xl lg:text-6xl`,children:[`Twelve skills.`,(0,A.jsx)(`br`,{
+
+}
+),(0,A.jsx)(`span`,{
+className:`font-display font-normal italic text-muted-foreground`,children:`One credential.`
+}
+)]
+}
+),(0,A.jsx)(`p`,{
+className:`mt-5 max-w-md text-lg text-muted-foreground`,children:`Scroll the path. Every certified skill fills the line — complete all twelve and the role credential unlocks.`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-8 flex items-baseline gap-3`,children:[(0,A.jsx)(`span`,{
+className:`font-heading text-7xl font-semibold tabular-nums tracking-[-0.05em]`,children:r
+}
+),(0,A.jsx)(`span`,{
+className:`font-mono text-sm text-muted-foreground`,children:`/ 12 certified`
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-8`,children:(0,A.jsx)(bE,{
+to:`/programs/${
+KD.slug
+}
+`,variant:`outline`,children:`Open the full path`
+}
+)
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+ref:e,className:`relative pl-2`,children:[(0,A.jsx)(`div`,{
+className:`absolute bottom-10 left-[27px] top-4 w-px bg-border`,"aria-hidden":!0
+}
+),(0,A.jsx)($.div,{
+style:{
+scaleY:n
+}
+,className:`absolute bottom-10 left-[27px] top-4 w-px origin-top bg-gradient-to-b from-success via-brand to-brand-2`,"aria-hidden":!0
+}
+),(0,A.jsx)(`ol`,{
+className:`space-y-3`,children:KD.skills.map((e,t)=>{
+let n=t<r;
+return(0,A.jsx)(`li`,{
+children:(0,A.jsxs)(Ds,{
+to:`/skills/${
+e
+}
+`,className:`flex items-center gap-4 rounded-2xl border px-3 py-3 transition-all duration-500 ${
+n?`border-border bg-surface shadow-soft`:`border-transparent`
+}
+`,children:[(0,A.jsx)(`span`,{
+className:`relative z-10 flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-500 ${
+n?`border-success/50 bg-success/15 text-success`:`border-border bg-background text-locked`
+}
+`,children:n?(0,A.jsx)(fn,{
+className:`h-4 w-4`,strokeWidth:2.5
+}
+):(0,A.jsx)(Cn,{
+className:`h-3.5 w-3.5`
+}
+)
+}
+),(0,A.jsx)(`span`,{
+className:`w-6 font-mono text-xs text-muted-foreground`,children:String(t+1).padStart(2,`0`)
+}
+),(0,A.jsx)(`span`,{
+className:`text-[15px] font-medium transition-colors duration-500 ${
+n?`text-foreground`:`text-muted-foreground`
+}
+`,children:NE(e).name
+}
+),n&&(0,A.jsx)(`span`,{
+className:`ml-auto font-mono text-[10px] uppercase tracking-[0.14em] text-success`,children:`Certified`
+}
+)]
+}
+)
+}
+,e)
+}
+)
+}
+),(0,A.jsxs)(`div`,{
+className:`relative mt-5 flex items-center gap-4 rounded-2xl border p-4 transition-all duration-700 ${
+a?`border-brand/50 bg-brand/10 glow-brand`:`border-dashed border-border bg-surface-2/50`
+}
+`,children:[(0,A.jsx)(`span`,{
+className:`relative z-10 flex h-11 w-11 items-center justify-center rounded-xl border transition-all duration-700 ${
+a?`border-brand bg-brand text-brand-foreground`:`border-border bg-background text-locked`
+}
+`,children:a?(0,A.jsx)(un,{
+className:`h-5 w-5`
+}
+):(0,A.jsx)(gn,{
+className:`h-4 w-4`
+}
+)
+}
+),(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground`,children:`Role certification`
+}
+),(0,A.jsx)(`div`,{
+className:`text-lg font-semibold tracking-tight`,children:KD.role
+}
+)]
+}
+),(0,A.jsx)(`span`,{
+className:`ml-auto font-mono text-[11px] uppercase tracking-[0.14em] ${
+a?`text-brand`:`text-muted-foreground`
+}
+`,children:a?`Unlocked`:`Locked`
+}
+)]
+}
+)]
+}
+)]
+}
+)
+}
+)
+}
+var JD=({
+children:e
+}
+)=>(0,A.jsx)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.18em] text-brand`,children:e
+}
+);
+function YD(){
+return(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(JD,{
+children:`Know · Question 3 of 5`
+}
+),(0,A.jsx)(`p`,{
+className:`mt-3 text-lg font-medium leading-snug tracking-tight`,children:`Which is the strongest starting point for an AI product strategy?`
+}
+),(0,A.jsx)(`div`,{
+className:`mt-5 space-y-2`,children:[`Ship an AI feature to match competitors`,`Identify where AI meaningfully reduces user effort`,`Add a chatbot to every screen`,`Wait for model costs to drop`].map((e,t)=>(0,A.jsxs)($.div,{
+initial:{
+opacity:0,x:-8
+}
+,animate:{
+opacity:1,x:0
+}
+,transition:{
+delay:.1+t*.07
+}
+,className:`flex items-center gap-3 rounded-xl border px-4 py-3 text-sm ${
+t===1?`border-brand/60 bg-brand/10`:`border-border`
+}
+`,children:[(0,A.jsx)(`span`,{
+className:`flex h-5 w-5 items-center justify-center rounded-full border text-[10px] ${
+t===1?`border-brand bg-brand text-brand-foreground`:`border-border`
+}
+`,children:t===1?(0,A.jsx)(fn,{
+className:`h-3 w-3`
+}
+):String.fromCharCode(65+t)
+}
+),e]
+}
+,e))
+}
+)]
+}
+)
+}
+var XD=`I'd start by mapping the three highest-effort moments in the current workflow, then test whether a model can remove one of them reliably. If accuracy is below the user's tolerance, the feature becomes an assistant rather than an automation…`;
+function ZD(){
+return(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(JD,{
+children:`Think · Written response`
+}
+),(0,A.jsx)(`p`,{
+className:`mt-3 text-sm text-muted-foreground`,children:`Your team wants to “add AI”. How would you decide what to build first?`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-4 min-h-[190px] rounded-xl border border-border bg-background p-4 text-[15px] leading-relaxed`,children:[XD.split(` `).map((e,t)=>(0,A.jsxs)($.span,{
+initial:{
+opacity:0
+}
+,animate:{
+opacity:1
+}
+,transition:{
+delay:.15+t*.03
+}
+,children:[e,` `]
+}
+,t)),(0,A.jsx)(`span`,{
+className:`ml-0.5 inline-block h-4 w-px animate-pulse bg-foreground align-middle`
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-3 flex justify-between font-mono text-[11px] text-muted-foreground`,children:[(0,A.jsx)(`span`,{
+children:`48 words`
+}
+),(0,A.jsx)(`span`,{
+children:`Autosaved`
+}
+)]
+}
+)]
+}
+)
+}
+function QD(){
+return(0,A.jsxs)(`div`,{
+className:`flex h-full flex-col`,children:[(0,A.jsx)(JD,{
+children:`Defend · AI interview`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-4 space-y-3`,children:[(0,A.jsxs)(`div`,{
+className:`flex gap-3`,children:[(0,A.jsx)(`span`,{
+className:`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand/15 text-brand`,children:(0,A.jsx)(Nn,{
+className:`h-4 w-4`
+}
+)
+}
+),(0,A.jsx)(`p`,{
+className:`rounded-2xl rounded-tl-sm bg-surface-2 px-4 py-3 text-sm`,children:`You said accuracy decides assistant vs automation. How would you measure that before launch?`
+}
+)]
+}
+),(0,A.jsx)($.div,{
+initial:{
+opacity:0,y:8
+}
+,animate:{
+opacity:1,y:0
+}
+,transition:{
+delay:.6
+}
+,className:`ml-11 rounded-2xl rounded-tr-sm border border-border px-4 py-3 text-sm`,children:`I'd build a labelled evaluation set from real tickets and track precision on the cases users care most about…`
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-auto flex items-center gap-3 rounded-2xl border border-border p-3`,children:[(0,A.jsx)(`span`,{
+className:`flex h-9 w-9 items-center justify-center rounded-full bg-foreground text-background`,children:(0,A.jsx)(Tn,{
+className:`h-4 w-4`
+}
+)
+}
+),(0,A.jsx)(`div`,{
+className:`flex h-8 flex-1 items-center gap-[3px]`,children:Array.from({
+length:36
+}
+).map((e,t)=>(0,A.jsx)($.span,{
+className:`w-[3px] rounded-full bg-brand/70`,animate:{
+height:[4,8+t*7%20,4]
+}
+,transition:{
+duration:1.1,repeat:1/0,delay:t*.04
+}
+
+}
+,t))
+}
+),(0,A.jsx)(`span`,{
+className:`font-mono text-[11px] text-muted-foreground`,children:`01:24`
+}
+)]
+}
+)]
+}
+)
+}
+function $D(){
+return(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(JD,{
+children:`Build · Practical project`
+}
+),(0,A.jsx)(`p`,{
+className:`mt-3 text-lg font-medium tracking-tight`,children:`Draft a one-page AI strategy for a support product.`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-5 flex items-center gap-3 rounded-xl border border-border bg-background p-4`,children:[(0,A.jsx)(yn,{
+className:`h-8 w-8 text-brand`
+}
+),(0,A.jsxs)(`div`,{
+className:`flex-1`,children:[(0,A.jsx)(`div`,{
+className:`text-sm font-medium`,children:`ai-strategy-v2.pdf`
+}
+),(0,A.jsx)(`div`,{
+className:`font-mono text-[11px] text-muted-foreground`,children:`Uploaded · 2 pages`
+}
+)]
+}
+),(0,A.jsx)(fn,{
+className:`h-4 w-4 text-success`
+}
+)]
+}
+),(0,A.jsx)(`ul`,{
+className:`mt-4 space-y-2`,children:[`Opportunity map`,`Evaluation plan`,`Launch metrics`].map((e,t)=>(0,A.jsxs)($.li,{
+initial:{
+opacity:0
+}
+,animate:{
+opacity:1
+}
+,transition:{
+delay:.2+t*.15
+}
+,className:`flex items-center gap-2.5 text-sm`,children:[(0,A.jsx)(`span`,{
+className:`flex h-4 w-4 items-center justify-center rounded-full bg-success/20 text-success`,children:(0,A.jsx)(fn,{
+className:`h-2.5 w-2.5`
+}
+)
+}
+),e]
+}
+,e))
+}
+)]
+}
+)
+}
+function eO(){
+return(0,A.jsxs)(`div`,{
+children:[(0,A.jsxs)(`div`,{
+className:`flex items-center justify-between`,children:[(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(JD,{
+children:`Result`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-2 flex items-center gap-2 text-2xl font-semibold tracking-tight text-success`,children:[`Certified `,(0,A.jsx)(fn,{
+className:`h-5 w-5`
+}
+)]
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`text-right`,children:[(0,A.jsx)(`div`,{
+className:`font-heading text-5xl font-semibold tracking-[-0.05em]`,children:`78%`
+}
+),(0,A.jsx)(`div`,{
+className:`font-mono text-[10px] text-muted-foreground`,children:`PASS ≥ 60%`
+}
+)]
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-6 space-y-3.5`,children:[[`Knowledge`,80],[`Reasoning`,76],[`Interview`,74],[`Practical`,82]].map(([e,t],n)=>(0,A.jsxs)(`div`,{
+children:[(0,A.jsxs)(`div`,{
+className:`flex justify-between text-xs`,children:[(0,A.jsx)(`span`,{
+className:`text-muted-foreground`,children:e
+}
+),(0,A.jsxs)(`span`,{
+className:`font-mono`,children:[t,`%`]
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-1.5 h-1.5 overflow-hidden rounded-full bg-surface-3`,children:(0,A.jsx)($.div,{
+initial:{
+width:0
+}
+,animate:{
+width:`${
+t
+}
+%`
+}
+,transition:{
+duration:1,delay:.1+n*.1
+}
+,className:`h-full rounded-full bg-gradient-to-r from-brand to-brand-2`
+}
+)
+}
+)]
+}
+,e))
+}
+),(0,A.jsx)(`div`,{
+className:`light-sweep sweep-now mt-6 rounded-xl border border-success/40 bg-success/10 px-4 py-3 text-sm font-medium text-success`,children:`Certificate generated · AX-DEMO78`
+}
+)]
+}
+)
+}
+var tO=[{
+k:`KNOW`,t:`Baseline knowledge`,d:`Scenario-based multiple choice checks what you know.`,C:YD
+}
+,{
+k:`THINK`,t:`Reasoning`,d:`A written response shows how you approach a real problem.`,C:ZD
+}
+,{
+k:`DEFEND`,t:`Spoken understanding`,d:`An AI interviewer asks you to explain and defend your thinking.`,C:QD
+}
+,{
+k:`BUILD`,t:`Practical application`,d:`A focused, real-world task proves you can do the work.`,C:$D
+}
+,{
+k:`RESULT`,t:`Certified`,d:`Meet the standard and your skill certificate is issued.`,C:eO
+}
+];
+function nO(){
+let e=(0,y.useRef)(null),[t,n]=(0,y.useState)(0),{
+scrollYProgress:r
+}
+=kT({
+target:e,offset:[`start start`,`end end`]
+}
+);
+Lw(r,`change`,e=>n(Math.min(4,Math.floor(e*5))));
+let i=tO[t].C;
+return(0,A.jsx)(`section`,{
+ref:e,className:`relative h-[460vh] border-y border-border bg-surface/40`,children:(0,A.jsx)(`div`,{
+className:`sticky top-0 flex h-screen items-center overflow-hidden`,children:(0,A.jsxs)(`div`,{
+className:`mx-auto grid w-full max-w-7xl items-center gap-8 px-5 pt-16 lg:grid-cols-[0.9fr_1.1fr] lg:gap-16 lg:px-8`,children:[(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(LE,{
+children:`The assessment experience`
+}
+),(0,A.jsx)(`h2`,{
+className:`mt-4 text-3xl font-semibold tracking-[-0.035em] sm:text-5xl`,children:`Know. Think. Defend. Build.`
+}
+),(0,A.jsx)(`ol`,{
+className:`mt-6 hidden space-y-1 lg:block`,children:tO.map((e,n)=>(0,A.jsxs)(`li`,{
+className:`rounded-2xl border px-5 py-4 transition-all duration-500 ${
+n===t?`border-border bg-surface shadow-soft`:`border-transparent opacity-50`
+}
+`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center gap-3`,children:[(0,A.jsx)(`span`,{
+className:`font-mono text-xs ${
+n===t?`text-brand`:`text-muted-foreground`
+}
+`,children:String(n+1).padStart(2,`0`)
+}
+),(0,A.jsx)(`span`,{
+className:`font-mono text-xs tracking-[0.16em]`,children:e.k
+}
+),(0,A.jsxs)(`span`,{
+className:`text-sm text-muted-foreground`,children:[`· `,e.t]
+}
+)]
+}
+),n===t&&(0,A.jsx)(`p`,{
+className:`mt-2 pl-8 text-sm text-muted-foreground`,children:e.d
+}
+)]
+}
+,e.k))
+}
+),(0,A.jsx)(`div`,{
+className:`mt-5 flex gap-1.5 lg:hidden`,children:tO.map((e,n)=>(0,A.jsx)(`span`,{
+className:`rounded-full px-2.5 py-1 font-mono text-[10px] transition-colors ${
+n===t?`bg-foreground text-background`:`bg-surface-2 text-muted-foreground`
+}
+`,children:e.k
+}
+,e.k))
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`relative rounded-[26px] border border-border bg-surface p-2 shadow-lift`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center justify-between px-4 py-3`,children:[(0,A.jsx)(`div`,{
+className:`flex gap-1.5`,children:[0,1,2].map(e=>(0,A.jsx)(`span`,{
+className:`h-2.5 w-2.5 rounded-full bg-surface-3`
+}
+,e))
+}
+),(0,A.jsxs)(`span`,{
+className:`font-mono text-[10px] text-muted-foreground`,children:[`AI Product Strategy · `,Math.min(t+1,4),` / 4`]
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`h-1 overflow-hidden rounded-full bg-surface-3 mx-4`,children:(0,A.jsx)($.div,{
+className:`h-full bg-gradient-to-r from-brand to-brand-2`,animate:{
+width:`${
+(t+1)/5*100
+}
+%`
+}
+,transition:{
+duration:.6
+}
+
+}
+)
+}
+),(0,A.jsx)(`div`,{
+className:`relative h-[380px] overflow-hidden sm:h-[420px]`,children:(0,A.jsx)(th,{
+mode:`wait`,children:(0,A.jsx)($.div,{
+initial:{
+opacity:0,y:24,filter:`blur(8px)`
+}
+,animate:{
+opacity:1,y:0,filter:`blur(0px)`
+}
+,exit:{
+opacity:0,y:-24,filter:`blur(8px)`
+}
+,transition:{
+duration:.45
+}
+,className:`absolute inset-0 p-5 sm:p-7`,children:(0,A.jsx)(i,{
+
+}
+)
+}
+,t)
+}
+)
+}
+)]
+}
+)]
+}
+)
+}
+)
+}
+)
+}
+var rO=[{
+t:`Students`,d:`Turn what you've learned into proof employers can check — before your first role.`,img:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/f8b00967d_generated_image.png`,cls:`lg:col-span-5 lg:row-span-2 min-h-[380px] lg:min-h-[520px]`
+}
+,{
+t:`Working professionals`,d:`Certify the skills you use every day, without pausing work for a course.`,img:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/e06b00256_generated_image.png`,cls:`lg:col-span-7 min-h-[250px]`
+}
+,{
+t:`Career switchers`,d:`Show a new field you're ready — with evidence, not just intent.`,img:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/6b21b29b5_generated_image.png`,cls:`lg:col-span-4 min-h-[250px]`
+}
+,{
+t:`Self-taught professionals`,d:`No degree in it? Get assessed on what you can actually do.`,img:`https://media.base44.com/images/public/6ab7bee77689dc7dd13fa52e/4ea72bdf1_generated_image.png`,cls:`lg:col-span-3 min-h-[250px]`
+}
+];
+function iO(){
+return(0,A.jsx)(`section`,{
+className:`py-24 lg:py-32`,children:(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-7xl px-5 lg:px-8`,children:[(0,A.jsx)(tD,{
+eyebrow:`Who it's for`,title:`For people who already do the work.`
+}
+),(0,A.jsx)(`div`,{
+className:`mt-14 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-12`,children:rO.map((e,t)=>(0,A.jsxs)(eD,{
+delay:t*.08,className:`group relative overflow-hidden rounded-[26px] border border-border min-h-[300px] ${
+e.cls
+}
+`,children:[(0,A.jsx)(yD,{
+src:e.img,alt:e.t,className:`absolute inset-0 h-full w-full object-cover transition-transform duration-[1200ms] group-hover:scale-[1.04]`
+}
+),(0,A.jsx)(`div`,{
+className:`absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent`
+}
+),(0,A.jsxs)(`div`,{
+className:`absolute inset-x-0 bottom-0 p-6`,children:[(0,A.jsx)(`h3`,{
+className:`text-2xl font-semibold tracking-tight text-white`,children:e.t
+}
+),(0,A.jsx)(`p`,{
+className:`mt-2 max-w-sm text-sm leading-relaxed text-white/80`,children:e.d
+}
+)]
+}
+)]
+}
+,e.t))
+}
+)]
+}
+)
+}
+)
+}
+var aO=WE[0],oO=[WE[1],WE[5],WE[3]];
+function sO(){
+return(0,A.jsx)(`section`,{
+className:`border-y border-border bg-surface/40 py-24 lg:py-32`,children:(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-7xl px-5 lg:px-8`,children:[(0,A.jsx)(tD,{
+eyebrow:`Testimonials · demo profiles`,title:`Proof, in their words.`,sub:`Illustrative demo profiles shown until verified candidate testimonials are published.`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-14 grid gap-5 lg:grid-cols-[1.3fr_1fr]`,children:[(0,A.jsxs)(eD,{
+className:`flex flex-col justify-between rounded-[26px] border border-border bg-surface p-8 sm:p-10`,children:[(0,A.jsxs)(`p`,{
+className:`font-display text-3xl leading-[1.15] tracking-[-0.01em] sm:text-4xl`,children:[`“`,aO.quote,`”`]
+}
+),(0,A.jsx)(cO,{
+t:aO,large:!0
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`grid gap-5`,children:oO.map((e,t)=>(0,A.jsxs)(eD,{
+delay:t*.08,className:`rounded-[22px] border border-border bg-surface p-6 transition-colors hover:border-brand/40`,children:[(0,A.jsxs)(`p`,{
+className:`text-[15px] leading-relaxed`,children:[`“`,e.quote,`”`]
+}
+),(0,A.jsx)(cO,{
+t:e
+}
+)]
+}
+,e.id))
+}
+)]
+}
+)]
+}
+)
+}
+)
+}
+function cO({
+t:e,large:t
+}
+){
+return(0,A.jsxs)(`div`,{
+className:`mt-6 flex items-center gap-3`,children:[(0,A.jsx)(`img`,{
+src:e.avatar,alt:`${
+e.name
+}
+, demo profile`,loading:`lazy`,className:`${
+t?`h-12 w-12`:`h-9 w-9`
+}
+ rounded-full object-cover`
+}
+),(0,A.jsxs)(`div`,{
+className:`min-w-0 flex-1`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center gap-1 text-sm font-medium`,children:[e.name,e.verified&&(0,A.jsx)(dn,{
+className:`h-3.5 w-3.5 text-brand`
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`text-xs text-muted-foreground`,children:[e.role,` · Certified in `,e.skill]
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`text-right`,children:[e.result&&(0,A.jsx)(`div`,{
+className:`font-mono text-[11px] text-foreground`,children:e.result
+}
+),(0,A.jsx)(`div`,{
+className:`font-mono text-[9px] uppercase tracking-[0.16em] text-muted-foreground`,children:`Demo profile`
+}
+)]
+}
+)]
+}
+)
+}
+var lO=[`MCQs`,`Descriptive assessment`,`AI interview`,`Practical assignment`,`Evaluation`,`Skill certificate if the required standard is met`];
+function uO(){
+return(0,A.jsx)(`section`,{
+className:`py-24 lg:py-32`,children:(0,A.jsxs)(`div`,{
+className:`mx-auto grid max-w-7xl items-center gap-14 px-5 lg:grid-cols-2 lg:px-8`,children:[(0,A.jsx)(tD,{
+eyebrow:`Pricing`,title:`Certify one skill.`,sub:`Pricing is per individual skill certification attempt. The role-level credential unlocks when you complete all the required skill certifications in a path.`
+}
+),(0,A.jsxs)(eD,{
+delay:.1,className:`light-sweep relative rounded-[30px] border border-border bg-surface p-8 shadow-lift sm:p-10`,children:[(0,A.jsx)(`div`,{
+className:`absolute -top-px left-10 right-10 h-px bg-gradient-to-r from-transparent via-brand to-transparent`
+}
+),(0,A.jsx)(`div`,{
+className:`font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground`,children:`One skill certification attempt`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-4 flex items-baseline gap-2`,children:[(0,A.jsx)(`span`,{
+className:`font-heading text-7xl font-semibold tracking-[-0.05em]`,children:`₹499`
+}
+),(0,A.jsx)(`span`,{
+className:`text-muted-foreground`,children:`+ GST`
+}
+)]
+}
+),(0,A.jsx)(`ul`,{
+className:`mt-8 space-y-3`,children:lO.map(e=>(0,A.jsxs)(`li`,{
+className:`flex items-center gap-3 text-[15px]`,children:[(0,A.jsx)(`span`,{
+className:`flex h-5 w-5 items-center justify-center rounded-full bg-success/15 text-success`,children:(0,A.jsx)(fn,{
+className:`h-3 w-3`,strokeWidth:3
+}
+)
+}
+),e]
+}
+,e))
+}
+),(0,A.jsx)(bE,{
+to:`/skills`,size:`lg`,className:`mt-9 w-full`,children:`Get Certified`
+}
+),(0,A.jsx)(`p`,{
+className:`mt-4 text-center text-xs text-muted-foreground`,children:`An assessment and certification attempt — not a course.`
+}
+)]
+}
+)]
+}
+)
+}
+)
+}
+var dO=y.useId||(()=>void 0),fO=0;
+function pO(e){
+let[t,n]=y.useState(dO());
+return He(()=>{
+e||n(e=>e??String(fO++))
+}
+,[e]),e||(t?`radix-${
+t
+}
+`:``)
+}
+var mO=`Collapsible`,[hO,gO]=le(mO),[_O,vO]=hO(mO),yO=y.forwardRef((e,t)=>{
+let{
+__scopeCollapsible:n,open:r,defaultOpen:i,disabled:a,onOpenChange:o,...s
+}
+=e,[c,l]=Ze({
+prop:r,defaultProp:i??!1,onChange:o,caller:mO
+}
+);
+return(0,A.jsx)(_O,{
+scope:n,disabled:a,contentId:pO(),open:c,onOpenToggle:y.useCallback(()=>l(e=>!e),[l]),children:(0,A.jsx)(Ce.div,{
+"data-state":TO(c),"data-disabled":a?``:void 0,...s,ref:t
+}
+)
+}
+)
+}
+);
+yO.displayName=mO;
+var bO=`CollapsibleTrigger`,xO=y.forwardRef((e,t)=>{
+let{
+__scopeCollapsible:n,...r
+}
+=e,i=vO(bO,n);
+return(0,A.jsx)(Ce.button,{
+type:`button`,"aria-controls":i.contentId,"aria-expanded":i.open||!1,"data-state":TO(i.open),"data-disabled":i.disabled?``:void 0,disabled:i.disabled,...r,ref:t,onClick:O(e.onClick,i.onOpenToggle)
+}
+)
+}
+);
+xO.displayName=bO;
+var SO=`CollapsibleContent`,CO=y.forwardRef((e,t)=>{
+let{
+forceMount:n,...r
+}
+=e,i=vO(SO,e.__scopeCollapsible);
+return(0,A.jsx)(Ke,{
+present:n||i.open,children:({
+present:e
+}
+)=>(0,A.jsx)(wO,{
+...r,ref:t,present:e
+}
+)
+}
+)
+}
+);
+CO.displayName=SO;
+var wO=y.forwardRef((e,t)=>{
+let{
+__scopeCollapsible:n,present:r,children:i,...a
+}
+=e,o=vO(SO,n),[s,c]=y.useState(r),l=y.useRef(null),u=se(t,l),d=y.useRef(0),f=d.current,p=y.useRef(0),m=p.current,h=o.open||s,g=y.useRef(h),_=y.useRef(void 0);
+return y.useEffect(()=>{
+let e=requestAnimationFrame(()=>g.current=!1);
+return()=>cancelAnimationFrame(e)
+}
+,[]),He(()=>{
+let e=l.current;
+if(e){
+_.current=_.current||{
+transitionDuration:e.style.transitionDuration,animationName:e.style.animationName
+}
+,e.style.transitionDuration=`0s`,e.style.animationName=`none`;
+let t=e.getBoundingClientRect();
+d.current=t.height,p.current=t.width,g.current||(e.style.transitionDuration=_.current.transitionDuration,e.style.animationName=_.current.animationName),c(r)
+}
+
+}
+,[o.open,r]),(0,A.jsx)(Ce.div,{
+"data-state":TO(o.open),"data-disabled":o.disabled?``:void 0,id:o.contentId,hidden:!h,...a,ref:u,style:{
+"--radix-collapsible-content-height":f?`${
+f
+}
+px`:void 0,"--radix-collapsible-content-width":m?`${
+m
+}
+px`:void 0,...e.style
+}
+,children:h&&i
+}
+)
+}
+);
+function TO(e){
+return e?`open`:`closed`
+}
+var EO=yO,DO=xO,OO=CO,kO=y.createContext(void 0);
+function AO(e){
+let t=y.useContext(kO);
+return e||t||`ltr`
+}
+var jO=`Accordion`,MO=[`Home`,`End`,`ArrowDown`,`ArrowUp`,`ArrowLeft`,`ArrowRight`],[NO,PO,FO]=ge(jO),[IO,LO]=le(jO,[FO,gO]),RO=gO(),zO=y.forwardRef((e,t)=>{
+let{
+type:n,...r
+}
+=e,i=r,a=r;
+return(0,A.jsx)(NO.Provider,{
+scope:e.__scopeAccordion,children:n===`multiple`?(0,A.jsx)(GO,{
+...a,ref:t
+}
+):(0,A.jsx)(WO,{
+...i,ref:t
+}
+)
+}
+)
+}
+);
+zO.displayName=jO;
+var[BO,VO]=IO(jO),[HO,UO]=IO(jO,{
+collapsible:!1
+}
+),WO=y.forwardRef((e,t)=>{
+let{
+value:n,defaultValue:r,onValueChange:i=()=>{
+
+}
+,collapsible:a=!1,...o
+}
+=e,[s,c]=Ze({
+prop:n,defaultProp:r??``,onChange:i,caller:jO
+}
+);
+return(0,A.jsx)(BO,{
+scope:e.__scopeAccordion,value:y.useMemo(()=>s?[s]:[],[s]),onItemOpen:c,onItemClose:y.useCallback(()=>a&&c(``),[a,c]),children:(0,A.jsx)(HO,{
+scope:e.__scopeAccordion,collapsible:a,children:(0,A.jsx)(JO,{
+...o,ref:t
+}
+)
+}
+)
+}
+)
+}
+),GO=y.forwardRef((e,t)=>{
+let{
+value:n,defaultValue:r,onValueChange:i=()=>{
+
+}
+,...a
+}
+=e,[o,s]=Ze({
+prop:n,defaultProp:r??[],onChange:i,caller:jO
+}
+),c=y.useCallback(e=>s((t=[])=>[...t,e]),[s]),l=y.useCallback(e=>s((t=[])=>t.filter(t=>t!==e)),[s]);
+return(0,A.jsx)(BO,{
+scope:e.__scopeAccordion,value:o,onItemOpen:c,onItemClose:l,children:(0,A.jsx)(HO,{
+scope:e.__scopeAccordion,collapsible:!0,children:(0,A.jsx)(JO,{
+...a,ref:t
+}
+)
+}
+)
+}
+)
+}
+),[KO,qO]=IO(jO),JO=y.forwardRef((e,t)=>{
+let{
+__scopeAccordion:n,disabled:r,dir:i,orientation:a=`vertical`,...o
+}
+=e,s=se(y.useRef(null),t),c=PO(n),l=AO(i)===`ltr`,u=O(e.onKeyDown,e=>{
+if(!MO.includes(e.key))return;
+let t=e.target,n=c().filter(e=>!e.ref.current?.disabled),r=n.findIndex(e=>e.ref.current===t),i=n.length;
+if(r===-1)return;
+e.preventDefault();
+let o=r,s=i-1,u=()=>{
+o=r+1,o>s&&(o=0)
+}
+,d=()=>{
+o=r-1,o<0&&(o=s)
+}
+;
+switch(e.key){
+case`Home`:o=0;
+break;
+case`End`:o=s;
+break;
+case`ArrowRight`:a===`horizontal`&&(l?u():d());
+break;
+case`ArrowDown`:a===`vertical`&&u();
+break;
+case`ArrowLeft`:a===`horizontal`&&(l?d():u());
+break;
+case`ArrowUp`:a===`vertical`&&d()
+}
+n[o%i].ref.current?.focus()
+}
+);
+return(0,A.jsx)(KO,{
+scope:n,disabled:r,direction:i,orientation:a,children:(0,A.jsx)(NO.Slot,{
+scope:n,children:(0,A.jsx)(Ce.div,{
+...o,"data-orientation":a,ref:s,onKeyDown:r?void 0:u
+}
+)
+}
+)
+}
+)
+}
+),YO=`AccordionItem`,[XO,ZO]=IO(YO),QO=y.forwardRef((e,t)=>{
+let{
+__scopeAccordion:n,value:r,...i
+}
+=e,a=qO(YO,n),o=VO(YO,n),s=RO(n),c=pO(),l=r&&o.value.includes(r)||!1,u=a.disabled||e.disabled;
+return(0,A.jsx)(XO,{
+scope:n,open:l,disabled:u,triggerId:c,children:(0,A.jsx)(EO,{
+"data-orientation":a.orientation,"data-state":ak(l),...s,...i,ref:t,disabled:u,open:l,onOpenChange:e=>{
+e?o.onItemOpen(r):o.onItemClose(r)
+}
+
+}
+)
+}
+)
+}
+);
+QO.displayName=YO;
+var $O=`AccordionHeader`,ek=y.forwardRef((e,t)=>{
+let{
+__scopeAccordion:n,...r
+}
+=e,i=qO(jO,n),a=ZO($O,n);
+return(0,A.jsx)(Ce.h3,{
+"data-orientation":i.orientation,"data-state":ak(a.open),"data-disabled":a.disabled?``:void 0,...r,ref:t
+}
+)
+}
+);
+ek.displayName=$O;
+var tk=`AccordionTrigger`,nk=y.forwardRef((e,t)=>{
+let{
+__scopeAccordion:n,...r
+}
+=e,i=qO(jO,n),a=ZO(tk,n),o=UO(tk,n),s=RO(n);
+return(0,A.jsx)(NO.ItemSlot,{
+scope:n,children:(0,A.jsx)(DO,{
+"aria-disabled":a.open&&!o.collapsible||void 0,"data-orientation":i.orientation,id:a.triggerId,...s,...r,ref:t
+}
+)
+}
+)
+}
+);
+nk.displayName=tk;
+var rk=`AccordionContent`,ik=y.forwardRef((e,t)=>{
+let{
+__scopeAccordion:n,...r
+}
+=e,i=qO(jO,n),a=ZO(rk,n),o=RO(n);
+return(0,A.jsx)(OO,{
+role:`region`,"aria-labelledby":a.triggerId,"data-orientation":i.orientation,...o,...r,ref:t,style:{
+"--radix-accordion-content-height":`var(--radix-collapsible-content-height)`,"--radix-accordion-content-width":`var(--radix-collapsible-content-width)`,...e.style
+}
+
+}
+)
+}
+);
+ik.displayName=rk;
+function ak(e){
+return e?`open`:`closed`
+}
+var ok=zO,sk=QO,ck=ek,lk=nk,uk=ik,dk=ok,fk=y.forwardRef(({
+className:e,...t
+}
+,n)=>(0,A.jsx)(sk,{
+ref:n,className:ai(`border-b`,e),...t
+}
+));
+fk.displayName=`AccordionItem`;
+var pk=y.forwardRef(({
+className:e,children:t,...n
+}
+,r)=>(0,A.jsx)(ck,{
+className:`flex`,children:(0,A.jsxs)(lk,{
+ref:r,className:ai(`flex flex-1 items-center justify-between py-4 text-sm font-medium transition-all hover:underline text-left [&[data-state=open]>svg]:rotate-180`,e),...n,children:[t,(0,A.jsx)(pn,{
+className:`h-4 w-4 shrink-0 text-muted-foreground transition-transform duration-200`
+}
+)]
+}
+)
+}
+));
+pk.displayName=lk.displayName;
+var mk=y.forwardRef(({
+className:e,children:t,...n
+}
+,r)=>(0,A.jsx)(uk,{
+ref:r,className:`overflow-hidden text-sm data-[state=closed]:animate-accordion-up data-[state=open]:animate-accordion-down`,...n,children:(0,A.jsx)(`div`,{
+className:ai(`pb-4 pt-0`,e),children:t
+}
+)
+}
+));
+mk.displayName=uk.displayName;
+var hk=[[`Do I need to take a course?`,`No. AcceleratorX certifies skills you already have. You go straight into the assessment — there's no course content to sit through.`],[`How long does a skill assessment take?`,`Most people finish all four stages in 2–3 hours. The practical build is the longest part, typically 60–90 minutes.`],[`What happens if I fail?`,`You'll see your score breakdown across knowledge, reasoning, interview and practical, so you know exactly where you fell short. No certificate is issued for that attempt.`],[`Can I retake an assessment?`,`Yes. Each retake is a new attempt at the standard ₹499 + GST price.`],[`What does ₹499 include?`,`One full attempt: MCQs, a descriptive assessment, an AI interview, a practical assignment, evaluation, and a skill certificate if you meet the required standard.`],[`What is a skill certificate?`,`A certificate for one specific skill, with your score, a unique certificate ID and an issue date that anyone can verify.`],[`How does the role-level certification work?`,`Each path has 12 required skills. Certify all of them and the role-level credential — for example AI Product Manager — unlocks automatically.`],[`How many skills are required?`,`Every current path requires 12 skill certifications. Some skills are shared between paths and count towards each of them.`],[`Can I verify the certificate?`,`Yes. Every certificate has an ID you can check on the Verify page.`],[`Can I use it on my resume?`,`Yes. Add the certificate and its ID to your resume or profile so others can verify it.`]];
+function gk({
+showHeading:e=!0
+}
+){
+return(0,A.jsx)(`section`,{
+className:`py-24 lg:py-32`,children:(0,A.jsxs)(`div`,{
+className:`mx-auto grid max-w-7xl gap-12 px-5 lg:grid-cols-[0.8fr_1.2fr] lg:px-8`,children:[e?(0,A.jsx)(tD,{
+eyebrow:`FAQ`,title:`Questions, answered.`
+}
+):(0,A.jsx)(`div`,{
+
+}
+),(0,A.jsx)(eD,{
+delay:.1,children:(0,A.jsx)(dk,{
+type:`single`,collapsible:!0,className:`border-t border-border`,children:hk.map(([e,t],n)=>(0,A.jsxs)(fk,{
+value:`q${
+n
+}
+`,className:`border-border`,children:[(0,A.jsx)(pk,{
+className:`py-5 text-left text-[17px] font-medium tracking-tight hover:no-underline`,children:e
+}
+),(0,A.jsx)(mk,{
+className:`pb-5 text-[15px] leading-relaxed text-muted-foreground`,children:t
+}
+)]
+}
+,e))
+}
+)
+}
+)]
+}
+)
+}
+)
+}
+function _k(){
+return(0,A.jsx)(`section`,{
+className:`px-5 pb-24 lg:px-8`,children:(0,A.jsxs)(`div`,{
+className:`relative mx-auto max-w-7xl overflow-hidden rounded-[34px] border border-border bg-surface px-6 py-20 text-center sm:py-28`,children:[(0,A.jsx)(`div`,{
+className:`pointer-events-none absolute inset-0 bg-grid mask-radial opacity-60`,"aria-hidden":!0
+}
+),(0,A.jsx)(`div`,{
+className:`pointer-events-none absolute left-1/2 top-full h-[400px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/15 blur-[100px]`,"aria-hidden":!0
+}
+),(0,A.jsxs)(eD,{
+className:`relative`,children:[(0,A.jsx)(`p`,{
+className:`font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground`,children:`Already know the skill?`
+}
+),(0,A.jsxs)(`h2`,{
+className:`mx-auto mt-6 max-w-4xl text-balance text-5xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-7xl`,children:[`Don't take another course.`,(0,A.jsx)(`span`,{
+className:`block font-display font-normal italic text-muted-foreground`,children:`Get certified.`
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-10 flex flex-col justify-center gap-3 sm:flex-row`,children:[(0,A.jsx)(bE,{
+to:`/skills`,size:`lg`,children:`Get Certified`
+}
+),(0,A.jsx)(bE,{
+to:`/programs`,size:`lg`,variant:`outline`,arrow:!1,children:`Explore certification paths`
+}
+)]
+}
+)]
+}
+)]
+}
+)
+}
+)
+}
+function vk(){
+return(0,A.jsxs)(A.Fragment,{
+children:[(0,A.jsx)($E,{
+
+}
+),(0,A.jsx)(UD,{
+
+}
+),(0,A.jsx)(GD,{
+
+}
+),(0,A.jsx)(qD,{
+
+}
+),(0,A.jsx)(nO,{
+
+}
+),(0,A.jsx)(iO,{
+
+}
+),(0,A.jsx)(sO,{
+
+}
+),(0,A.jsx)(uO,{
+
+}
+),(0,A.jsx)(gk,{
+
+}
+),(0,A.jsx)(_k,{
+
+}
+)]
+}
+)
+}
+function yk(){
+let[e,...t]=kE;
+return(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-7xl px-5 pb-24 pt-32 lg:px-8 lg:pt-40`,children:[(0,A.jsx)(eD,{
+children:(0,A.jsx)(LE,{
+children:`Certification paths`
+}
+)
+}
+),(0,A.jsx)(eD,{
+delay:.05,children:(0,A.jsxs)(`h1`,{
+className:`mt-5 max-w-4xl text-balance text-5xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-7xl`,children:[`Choose the role.`,(0,A.jsx)(`span`,{
+className:`block font-display font-normal italic text-muted-foreground`,children:`Certify the skills behind it.`
+}
+)]
+}
+)
+}
+),(0,A.jsx)(eD,{
+delay:.1,children:(0,A.jsx)(`p`,{
+className:`mt-6 max-w-xl text-lg text-muted-foreground`,children:`Every path is 12 skill certifications that unlock one role-level credential. Start anywhere — your progress carries across paths that share skills.`
+}
+)
+}
+),(0,A.jsx)(`div`,{
+className:`mt-16`,children:(0,A.jsx)(VD,{
+program:e
+}
+)
+}
+),(0,A.jsx)(`div`,{
+className:`mt-5 grid gap-5 md:grid-cols-2 lg:grid-cols-3`,children:t.map((e,t)=>(0,A.jsx)(eD,{
+delay:t%3*.08,children:(0,A.jsx)(BD,{
+program:e
+}
+)
+}
+,e.slug))
+}
+)]
+}
+)
+}
+var bk={
+locked:`Locked`,available:`Available`,in_progress:`In progress`,completed:`Completed · retake to certify`,certified:`Certified`
+}
+;
+function xk({
+status:e,size:t=`md`
+}
+){
+let n=t===`sm`?`h-6 w-6`:`h-9 w-9`,r=t===`sm`?`h-3 w-3`:`h-4 w-4`,i={
+locked:[`border-border bg-surface text-locked`,(0,A.jsx)(Cn,{
+className:r
+}
+,`i`)],available:[`border-brand/60 bg-brand/10 text-brand glow-brand`,(0,A.jsx)(mn,{
+className:r
+}
+,`i`)],in_progress:[`border-warning/50 bg-warning/10 text-warning`,(0,A.jsx)(mn,{
+className:`${
+r
+}
+ animate-pulse`
+}
+,`i`)],completed:[`border-foreground/25 bg-surface-2 text-foreground`,(0,A.jsx)(Dn,{
+className:r
+}
+,`i`)],certified:[`border-success/50 bg-success/15 text-success`,(0,A.jsx)(fn,{
+className:r,strokeWidth:2.5
+}
+,`i`)]
+}
+,[a,o]=i[e]||i.locked;
+return(0,A.jsx)(`span`,{
+className:`relative z-10 inline-flex shrink-0 items-center justify-center rounded-full border transition-all duration-500 ${
+n
+}
+ ${
+a
+}
+`,"aria-label":bk[e],children:o
+}
+)
+}
+var Sk={
+available:`Get certified`,in_progress:`Continue`,completed:`Retake`,certified:`View certificate`,locked:`View skill`
+}
+;
+function Ck({
+skill:e,index:t,status:n,celebrate:r
+}
+){
+let[i,a]=(0,y.useState)(!1),o=n===`locked`;
+return(0,A.jsxs)(Ds,{
+to:`/skills/${
+e.slug
+}
+`,onMouseEnter:()=>a(!0),onMouseLeave:()=>a(!1),onFocus:()=>a(!0),onBlur:()=>a(!1),className:`group relative block rounded-2xl border px-1 py-2 transition-all duration-300 sm:px-2 ${
+i?`border-border bg-surface shadow-soft`:`border-transparent`
+}
+`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center gap-3 sm:gap-4`,children:[(0,A.jsx)(`span`,{
+className:r&&n===`certified`?`rounded-full shadow-[0_0_24px_hsl(var(--glow)/0.6)] transition-shadow duration-700`:``,children:(0,A.jsx)(xk,{
+status:n
+}
+)
+}
+),(0,A.jsx)(`span`,{
+className:`w-6 font-mono text-xs text-muted-foreground`,children:String(t+1).padStart(2,`0`)
+}
+),(0,A.jsxs)(`div`,{
+className:`min-w-0 flex-1`,children:[(0,A.jsx)(`div`,{
+className:`truncate text-[15px] font-medium tracking-tight sm:text-base ${
+o?`text-muted-foreground`:`text-foreground`
+}
+`,children:e.name
+}
+),(0,A.jsx)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.14em] ${
+n===`certified`?`text-success`:n===`available`?`text-brand`:`text-muted-foreground`
+}
+`,children:bk[n]
+}
+)]
+}
+),n===`certified`&&(0,A.jsx)(un,{
+className:`h-4 w-4 text-success`,"aria-hidden":!0
+}
+),n===`available`&&!i&&(0,A.jsx)(`span`,{
+className:`hidden font-mono text-[11px] text-brand sm:block`,children:`₹499`
+}
+)]
+}
+),(0,A.jsx)(th,{
+initial:!1,children:i&&(0,A.jsx)($.div,{
+initial:{
+height:0,opacity:0
+}
+,animate:{
+height:`auto`,opacity:1
+}
+,exit:{
+height:0,opacity:0
+}
+,transition:{
+duration:.3
+}
+,className:`overflow-hidden`,children:(0,A.jsxs)(`div`,{
+className:`pb-2 pl-[52px] pr-2 pt-3 sm:pl-[88px]`,children:[(0,A.jsx)(`p`,{
+className:`max-w-lg text-sm leading-relaxed text-muted-foreground`,children:e.description
+}
+),(0,A.jsx)(`div`,{
+className:`mt-3 flex flex-wrap gap-1.5`,children:OE.map(e=>(0,A.jsxs)(`span`,{
+className:`rounded-full border border-border bg-surface-2 px-2.5 py-1 font-mono text-[10px] tracking-[0.12em]`,children:[e.type,` · `,e.title]
+}
+,e.id))
+}
+),(0,A.jsxs)(`span`,{
+className:`mt-4 inline-flex items-center gap-1.5 text-sm font-medium ${
+o?`text-muted-foreground`:`text-foreground`
+}
+`,children:[o?`Certify the previous skill to unlock`:Sk[n],` `,(0,A.jsx)(cn,{
+className:`h-3.5 w-3.5 transition-transform group-hover:translate-x-1`
+}
+)]
+}
+)]
+}
+)
+}
+)
+}
+)]
+}
+)
+}
+function wk({
+program:e,unlocked:t,ready:n,certId:r
+}
+){
+let i=(0,A.jsx)($.div,{
+animate:t?{
+scale:[1,1.02,1]
+}
+:{
+
+}
+,transition:{
+duration:.8
+}
+,className:`relative mt-4 overflow-hidden rounded-[22px] border p-5 transition-all duration-700 ${
+t?`light-sweep sweep-now border-brand/50 bg-brand/10 glow-brand`:`border-dashed border-border bg-surface-2/50`
+}
+`,children:(0,A.jsxs)(`div`,{
+className:`flex items-center gap-4`,children:[(0,A.jsx)(`span`,{
+className:`relative z-10 flex h-11 w-11 shrink-0 rotate-45 items-center justify-center rounded-xl border transition-all duration-700 sm:h-[52px] sm:w-[52px] ${
+t?`border-brand bg-brand text-brand-foreground`:`border-border bg-background text-locked`
+}
+`,children:(0,A.jsx)(`span`,{
+className:`-rotate-45`,children:t?(0,A.jsx)(un,{
+className:`h-5 w-5`
+}
+):(0,A.jsx)(Cn,{
+className:`h-4 w-4 ${
+n?`animate-pulse`:``
+}
+`
+}
+)
+}
+)
+}
+),(0,A.jsxs)(`div`,{
+className:`min-w-0 flex-1`,children:[(0,A.jsx)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground`,children:`Role certification`
+}
+),(0,A.jsx)(`div`,{
+className:`text-xl font-semibold tracking-tight`,children:e.role
+}
+),(0,A.jsx)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.14em] ${
+t?`text-brand`:`text-muted-foreground`
+}
+`,children:t?`Unlocked`:n?`Unlocking…`:`Locked · complete all 12 skills`
+}
+)]
+}
+),t&&(0,A.jsx)(cn,{
+className:`h-4 w-4 text-brand`
+}
+)]
+}
+)
+}
+);
+return t?(0,A.jsx)(Ds,{
+to:`/certificate/${
+r
+}
+`,"aria-label":`View role certificate`,children:i
+}
+):i
+}
+function Tk({
+program:e,statuses:t,roleCertId:n,celebrate:r
+}
+){
+let i=t.findIndex(e=>e!==`certified`),a=i===-1?1:i/e.skills.length;
+return(0,A.jsxs)(`section`,{
+"aria-label":`${
+e.name
+}
+ skill path`,className:`relative`,children:[(0,A.jsx)(`div`,{
+className:`absolute bottom-16 left-[21px] top-6 w-px bg-border sm:left-[25px]`,"aria-hidden":!0
+}
+),(0,A.jsx)($.div,{
+className:`absolute left-[21px] top-6 w-px bg-gradient-to-b from-success via-brand to-brand-2 sm:left-[25px]`,initial:{
+height:0
+}
+,animate:{
+height:`calc((100% - 88px) * ${
+a
+}
+)`
+}
+,transition:{
+duration:1.2,ease:[.2,.7,.2,1]
+}
+,"aria-hidden":!0
+}
+),(0,A.jsx)(`ol`,{
+className:`space-y-1.5`,children:e.skills.map((e,n)=>(0,A.jsx)($.li,{
+initial:{
+opacity:0,x:-12
+}
+,whileInView:{
+opacity:1,x:0
+}
+,viewport:{
+once:!0
+}
+,transition:{
+delay:Math.min(n,6)*.05,duration:.5
+}
+,children:(0,A.jsx)(Ck,{
+skill:NE(e),index:n,status:t[n],celebrate:r
+}
+)
+}
+,e))
+}
+),(0,A.jsx)(wk,{
+program:e,unlocked:!!n,ready:i===-1,certId:n
+}
+)]
+}
+)
+}
+function Ek({
+program:e,statuses:t,done:n,roleCertId:r
+}
+){
+let i=Math.round(n/e.skills.length*100),a=t.findIndex(e=>e!==`certified`),o=a>=0?NE(e.skills[a]):null,s=2*Math.PI*52;
+return(0,A.jsxs)(`aside`,{
+className:`lg:sticky lg:top-24 lg:h-fit`,children:[(0,A.jsxs)(`div`,{
+className:`rounded-[26px] border border-border bg-surface p-6 shadow-soft`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center gap-5`,children:[(0,A.jsxs)(`div`,{
+className:`relative h-[124px] w-[124px] shrink-0`,children:[(0,A.jsxs)(`svg`,{
+viewBox:`0 0 124 124`,className:`h-full w-full -rotate-90`,children:[(0,A.jsx)(`circle`,{
+cx:`62`,cy:`62`,r:52,fill:`none`,stroke:`hsl(var(--surface-3))`,strokeWidth:`6`
+}
+),(0,A.jsx)($.circle,{
+cx:`62`,cy:`62`,r:52,fill:`none`,stroke:`url(#ringGrad)`,strokeWidth:`6`,strokeLinecap:`round`,strokeDasharray:s,initial:{
+strokeDashoffset:s
+}
+,animate:{
+strokeDashoffset:s-s*i/100
+}
+,transition:{
+duration:1.2,ease:[.2,.7,.2,1]
+}
+
+}
+),(0,A.jsx)(`defs`,{
+children:(0,A.jsxs)(`linearGradient`,{
+id:`ringGrad`,children:[(0,A.jsx)(`stop`,{
+offset:`0%`,stopColor:`hsl(var(--brand))`
+}
+),(0,A.jsx)(`stop`,{
+offset:`100%`,stopColor:`hsl(var(--brand-2))`
+}
+)]
+}
+)
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`absolute inset-0 flex flex-col items-center justify-center`,children:(0,A.jsxs)(`span`,{
+className:`font-heading text-3xl font-semibold tabular-nums tracking-[-0.04em]`,children:[i,`%`]
+}
+)
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+children:[(0,A.jsxs)(`div`,{
+className:`font-heading text-2xl font-semibold tracking-tight`,children:[n,` / 12`]
+}
+),(0,A.jsx)(`div`,{
+className:`text-sm text-muted-foreground`,children:`skills certified`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground`,children:[12-n,` to `,e.role]
+}
+)]
+}
+)]
+}
+),o?(0,A.jsxs)(`div`,{
+className:`mt-6 border-t border-border pt-5`,children:[(0,A.jsx)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground`,children:`Up next`
+}
+),(0,A.jsx)(`div`,{
+className:`mt-1 text-lg font-semibold tracking-tight`,children:o.name
+}
+),(0,A.jsx)(bE,{
+to:`/skills/${
+o.slug
+}
+`,className:`mt-4 w-full`,children:`Get certified`
+}
+)]
+}
+):(0,A.jsxs)(`div`,{
+className:`mt-6 border-t border-border pt-5`,children:[(0,A.jsx)(`div`,{
+className:`text-lg font-semibold tracking-tight text-success`,children:`Path complete`
+}
+),r&&(0,A.jsx)(bE,{
+to:`/certificate/${
+r
+}
+`,className:`mt-4 w-full`,children:`View role certificate`
+}
+)]
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-4 rounded-[20px] border border-dashed border-border p-5`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center gap-2 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground`,children:[(0,A.jsx)(bn,{
+className:`h-3.5 w-3.5`
+}
+),` Demo controls`]
+}
+),(0,A.jsx)(`p`,{
+className:`mt-2 text-xs leading-relaxed text-muted-foreground`,children:`Preview the progression without taking every assessment. Simulated certifications are marked as demo.`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-4 flex gap-2`,children:[(0,A.jsx)(`button`,{
+onClick:()=>ND(e.slug),disabled:!o,className:`flex-1 rounded-full border border-border bg-surface-2 px-3 py-2 text-xs font-medium transition-colors hover:bg-surface-3 disabled:opacity-40`,children:`Simulate next`
+}
+),(0,A.jsxs)(`button`,{
+onClick:()=>FD(e.slug),disabled:n===0,className:`flex items-center gap-1.5 rounded-full border border-border px-3 py-2 text-xs text-muted-foreground transition-colors hover:text-foreground disabled:opacity-40`,"aria-label":`Reset path progress`,children:[(0,A.jsx)(Dn,{
+className:`h-3 w-3`
+}
+),` Reset`]
+}
+)]
+}
+)]
+}
+)]
+}
+)
+}
+function Dk({
+program:e,onClose:t
+}
+){
+let[n,r]=(0,y.useState)(0),[i,a]=(0,y.useState)(null);
+return(0,y.useEffect)(()=>{
+let t=setTimeout(()=>r(1),1200),n=setTimeout(()=>{
+a(PD(e.slug)),r(2)
+}
+,2300),i=setTimeout(()=>r(3),3600);
+return()=>[t,n,i].forEach(clearTimeout)
+}
+,[e.slug]),(0,ae.createPortal)((0,A.jsxs)($.div,{
+initial:{
+opacity:0
+}
+,animate:{
+opacity:1
+}
+,className:`fixed inset-0 z-[100] flex items-center justify-center bg-background/85 p-5 backdrop-blur-xl`,role:`dialog`,"aria-label":`Role certification unlocked`,children:[(0,A.jsx)(`div`,{
+className:`pointer-events-none absolute left-1/2 top-1/2 h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand/20 blur-[120px]`
+}
+),(0,A.jsxs)(`div`,{
+className:`relative w-full max-w-md text-center`,children:[(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:10
+}
+,animate:{
+opacity:1,y:0
+}
+,className:`font-mono text-sm tracking-[0.18em] text-success`,children:[(0,A.jsx)(fn,{
+className:`mr-1 inline h-4 w-4`
+}
+),` 12 / 12 COMPLETE`]
+}
+),(0,A.jsxs)(`div`,{
+className:`relative mx-auto mt-8 flex h-[260px] items-center justify-center`,children:[(0,A.jsx)(th,{
+children:n<2&&(0,A.jsx)($.div,{
+exit:{
+opacity:0,scale:.4,rotate:20
+}
+,animate:n===1?{
+rotate:[0,-12,12,-8,0]
+}
+:{
+
+}
+,transition:{
+duration:.6
+}
+,className:`flex h-24 w-24 items-center justify-center rounded-3xl border border-border bg-surface text-locked`,children:(0,A.jsx)(Cn,{
+className:`h-9 w-9`
+}
+)
+}
+,`lock`)
+}
+),n>=2&&(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:80,scale:.9
+}
+,animate:{
+opacity:1,y:0,scale:1
+}
+,transition:{
+type:`spring`,stiffness:90,damping:14
+}
+,className:`light-sweep sweep-now absolute inset-x-4 rounded-[22px] border border-brand/40 bg-surface p-6 text-left shadow-lift`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center justify-between`,children:[(0,A.jsx)(`span`,{
+className:`font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground`,children:`AcceleratorX · Role certification`
+}
+),(0,A.jsx)(un,{
+className:`h-5 w-5 text-brand`
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-6 text-3xl font-semibold tracking-[-0.03em]`,children:e.role
+}
+),(0,A.jsx)(`div`,{
+className:`mt-1 text-sm text-muted-foreground`,children:`Based on 12 verified skill certifications`
+}
+),(0,A.jsx)(`div`,{
+className:`mt-6 font-mono text-[11px] text-muted-foreground`,children:i
+}
+)]
+}
+)]
+}
+),(0,A.jsx)(th,{
+children:n===3&&(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:12
+}
+,animate:{
+opacity:1,y:0
+}
+,children:[(0,A.jsx)(`h2`,{
+className:`text-3xl font-semibold tracking-[-0.03em]`,children:`Role certification unlocked`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-6 flex flex-col justify-center gap-2 sm:flex-row`,children:[(0,A.jsx)(bE,{
+to:`/certificate/${
+i
+}
+`,children:`View certificate`
+}
+),(0,A.jsx)(bE,{
+onClick:t,variant:`outline`,arrow:!1,children:`Back to path`
+}
+)]
+}
+)]
+}
+)
+}
+)]
+}
+)]
+}
+),document.body)
+}
+function Ok({
+title:e,body:t=`We couldn't find what you were looking for.`,to:n=`/`,cta:r=`Go home`
+}
+){
+return(0,A.jsxs)(`div`,{
+className:`mx-auto flex min-h-[70vh] max-w-xl flex-col items-center justify-center px-5 pt-24 text-center`,children:[(0,A.jsx)(`div`,{
+className:`font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground`,children:`404`
+}
+),(0,A.jsx)(`h1`,{
+className:`mt-4 text-4xl font-semibold tracking-[-0.04em]`,children:e
+}
+),(0,A.jsx)(`p`,{
+className:`mt-3 text-muted-foreground`,children:t
+}
+),(0,A.jsx)(bE,{
+to:n,className:`mt-8`,children:r
+}
+)]
+}
+)
+}
+function kk(){
+let{
+slug:e
+}
+=Ho(),t=ME(e),n=DD(),[r,i]=(0,y.useState)(!1),a=t?ID(e,n):[],o=a.filter(e=>e===`certified`).length,s=t&&o===t.skills.length,c=t?n.roleCerts[e]:null;
+return(0,y.useEffect)(()=>{
+if(s&&!c){
+let e=setTimeout(()=>i(!0),900);
+return()=>clearTimeout(e)
+}
+
+}
+,[s,c]),t?(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-7xl px-5 pb-24 pt-28 lg:px-8 lg:pt-36`,children:[(0,A.jsxs)(Ds,{
+to:`/programs`,className:`inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground`,children:[(0,A.jsx)(sn,{
+className:`h-4 w-4`
+}
+),` All paths`]
+}
+),(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:16,filter:`blur(8px)`
+}
+,animate:{
+opacity:1,y:0,filter:`blur(0px)`
+}
+,transition:{
+duration:.8
+}
+,className:`mt-8 max-w-4xl`,children:[(0,A.jsx)(LE,{
+children:`12 skill certifications · One role-level credential`
+}
+),(0,A.jsx)(`h1`,{
+className:`mt-5 text-balance text-5xl font-semibold leading-[0.96] tracking-[-0.045em] sm:text-7xl`,children:t.name
+}
+),(0,A.jsxs)(`p`,{
+className:`mt-6 max-w-xl text-lg text-muted-foreground`,children:[`Complete the required skill certifications to unlock the `,(0,A.jsx)(`span`,{
+className:`text-foreground`,children:t.role
+}
+),` credential.`]
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-14 grid gap-10 lg:grid-cols-[360px_1fr] lg:gap-16`,children:[(0,A.jsx)(Ek,{
+program:t,statuses:a,done:o,roleCertId:c
+}
+),(0,A.jsx)(Tk,{
+program:t,statuses:a,roleCertId:c,celebrate:r||!!c
+}
+)]
+}
+),r&&(0,A.jsx)(Dk,{
+program:t,onClose:()=>i(!1)
+}
+)]
+}
+):(0,A.jsx)(Ok,{
+title:`Path not found`,to:`/programs`,cta:`See all paths`
+}
+)
+}
+function Ak(){
+let e=DD(),[t,n]=(0,y.useState)(``),[r,i]=(0,y.useState)(!1),[a,o]=(0,y.useState)(`all`),s=(0,y.useMemo)(()=>jE.filter(e=>(a===`all`||e.programs.includes(a))&&e.name.toLowerCase().includes(t.toLowerCase())),[t,a]);
+return(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-5xl px-5 pb-24 pt-32 lg:px-8 lg:pt-40`,children:[(0,A.jsx)(eD,{
+children:(0,A.jsx)(LE,{
+children:`All skill certifications`
+}
+)
+}
+),(0,A.jsx)(eD,{
+delay:.05,children:(0,A.jsx)(`h1`,{
+className:`mt-5 text-5xl font-semibold tracking-[-0.045em] sm:text-6xl`,children:`Find a skill to certify.`
+}
+)
+}
+),(0,A.jsx)(eD,{
+delay:.1,children:(0,A.jsx)(`p`,{
+className:`mt-5 max-w-xl text-lg text-muted-foreground`,children:`Every skill belongs to at least one role path. Certify it once — it counts everywhere it appears.`
+}
+)
+}
+),(0,A.jsx)(`div`,{
+className:`sticky top-16 z-20 -mx-5 mt-10 border-b border-border bg-background/85 px-5 py-4 backdrop-blur-xl`,children:(0,A.jsxs)(`div`,{
+className:`flex items-center gap-2`,children:[(0,A.jsxs)($.div,{
+animate:{
+width:r?`100%`:40
+}
+,transition:{
+duration:.35,ease:[.2,.7,.2,1]
+}
+,className:`relative flex h-10 max-w-sm shrink-0 items-center overflow-hidden rounded-full border border-border bg-surface`,children:[(0,A.jsx)(`button`,{
+onClick:()=>i(!0),className:`flex h-10 w-10 shrink-0 items-center justify-center`,"aria-label":`Search skills`,children:(0,A.jsx)(On,{
+className:`h-4 w-4`
+}
+)
+}
+),r&&(0,A.jsx)(`input`,{
+autoFocus:!0,value:t,onChange:e=>n(e.target.value),placeholder:`Search skills`,className:`h-full flex-1 bg-transparent pr-2 text-sm outline-none placeholder:text-muted-foreground`,"aria-label":`Search skills`
+}
+),r&&(0,A.jsx)(`button`,{
+onClick:()=>{
+n(``),i(!1)
+}
+,className:`mr-2 flex h-7 w-7 items-center justify-center rounded-full hover:bg-surface-2`,"aria-label":`Close search`,children:(0,A.jsx)(In,{
+className:`h-3.5 w-3.5`
+}
+)
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`flex gap-1.5 overflow-x-auto pb-0.5 [scrollbar-width:none]`,children:[{
+slug:`all`,name:`All`
+}
+,...kE].map(e=>(0,A.jsx)(`button`,{
+onClick:()=>o(e.slug),className:`shrink-0 rounded-full px-3.5 py-2 text-xs font-medium transition-colors ${
+a===e.slug?`bg-foreground text-background`:`border border-border text-muted-foreground hover:text-foreground`
+}
+`,children:e.name
+}
+,e.slug))
+}
+)]
+}
+)
+}
+),(0,A.jsx)(`ul`,{
+className:`mt-4 divide-y divide-border`,children:(0,A.jsx)(th,{
+initial:!1,children:s.map(t=>{
+let{
+status:n
+}
+=LD(t.slug,e);
+return(0,A.jsx)($.li,{
+layout:!0,initial:{
+opacity:0
+}
+,animate:{
+opacity:1
+}
+,exit:{
+opacity:0
+}
+,children:(0,A.jsxs)(Ds,{
+to:`/skills/${
+t.slug
+}
+`,className:`group flex items-center gap-4 py-4 transition-colors`,children:[(0,A.jsx)(xk,{
+status:n,size:`sm`
+}
+),(0,A.jsxs)(`div`,{
+className:`min-w-0 flex-1`,children:[(0,A.jsx)(`div`,{
+className:`truncate font-medium tracking-tight transition-transform duration-300 group-hover:translate-x-1`,children:t.name
+}
+),(0,A.jsx)(`div`,{
+className:`truncate text-xs text-muted-foreground`,children:t.programs.map(e=>ME(e).name).join(` · `)
+}
+)]
+}
+),(0,A.jsx)(`span`,{
+className:`hidden font-mono text-xs text-muted-foreground sm:block`,children:`₹499`
+}
+),(0,A.jsx)(cn,{
+className:`h-4 w-4 text-muted-foreground transition-all group-hover:translate-x-1 group-hover:text-foreground`
+}
+)]
+}
+)
+}
+,t.slug)
+}
+)
+}
+)
+}
+),s.length===0&&(0,A.jsxs)(`p`,{
+className:`py-16 text-center text-muted-foreground`,children:[`No skills match “`,t,`”.`]
+}
+)]
+}
+)
+}
+function jk(){
+return(0,A.jsx)(`ol`,{
+className:`mt-5 grid gap-3 sm:grid-cols-2`,children:OE.map((e,t)=>(0,A.jsxs)($.li,{
+initial:{
+opacity:0,y:16
+}
+,whileInView:{
+opacity:1,y:0
+}
+,viewport:{
+once:!0
+}
+,transition:{
+delay:t*.08,duration:.6
+}
+,className:`group rounded-[22px] border border-border bg-surface p-6 transition-all duration-300 hover:-translate-y-0.5 hover:border-brand/40`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center justify-between`,children:[(0,A.jsx)(`span`,{
+className:`font-mono text-xs text-muted-foreground`,children:String(t+1).padStart(2,`0`)
+}
+),(0,A.jsx)(`span`,{
+className:`font-mono text-[11px] text-muted-foreground`,children:e.duration
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-6 font-heading text-3xl font-semibold tracking-[-0.03em]`,children:e.type
+}
+),(0,A.jsx)(`div`,{
+className:`mt-1 text-sm font-medium text-brand`,children:e.title
+}
+),(0,A.jsx)(`p`,{
+className:`mt-3 text-sm leading-relaxed text-muted-foreground`,children:e.description
+}
+)]
+}
+,e.id))
+}
+)
+}
+function Mk({
+skill:e,access:t,certified:n
+}
+){
+let{
+status:r,blocker:i
+}
+=t;
+return(0,A.jsx)(`aside`,{
+className:`lg:sticky lg:top-24 lg:h-fit`,children:(0,A.jsxs)(`div`,{
+className:`light-sweep rounded-[26px] border border-border bg-surface p-7 shadow-lift`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center justify-between`,children:[(0,A.jsx)(`span`,{
+className:`font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground`,children:`One certification attempt`
+}
+),(0,A.jsx)(`span`,{
+className:`rounded-full px-2.5 py-1 font-mono text-[10px] ${
+r===`certified`?`bg-success/15 text-success`:r===`locked`?`bg-surface-2 text-muted-foreground`:`bg-brand/15 text-brand`
+}
+`,children:bk[r]
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-4 flex items-baseline gap-2`,children:[(0,A.jsx)(`span`,{
+className:`font-heading text-6xl font-semibold tracking-[-0.05em]`,children:`₹499`
+}
+),(0,A.jsx)(`span`,{
+className:`text-muted-foreground`,children:`+ GST`
+}
+)]
+}
+),(0,A.jsxs)(`ul`,{
+className:`mt-6 space-y-2.5 text-sm`,children:[(0,A.jsxs)(`li`,{
+className:`flex items-center gap-2.5`,children:[(0,A.jsx)(hn,{
+className:`h-4 w-4 text-muted-foreground`
+}
+),` `,e.duration,` total`]
+}
+),(0,A.jsxs)(`li`,{
+className:`flex items-center gap-2.5`,children:[(0,A.jsx)(Fn,{
+className:`h-4 w-4 text-muted-foreground`
+}
+),` Pass standard: `,e.passScore,`%`]
+}
+),(0,A.jsxs)(`li`,{
+className:`flex items-center gap-2.5`,children:[(0,A.jsx)(un,{
+className:`h-4 w-4 text-muted-foreground`
+}
+),` Verifiable skill certificate`]
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-7`,children:[r===`certified`&&(0,A.jsxs)(`div`,{
+className:`space-y-2`,children:[(0,A.jsx)(bE,{
+to:`/certificate/${
+n.certId
+}
+`,className:`w-full`,children:`View certificate`
+}
+),(0,A.jsx)(bE,{
+to:`/assessment/${
+e.slug
+}
+/result`,variant:`outline`,arrow:!1,className:`w-full`,children:`See result`
+}
+)]
+}
+),r===`locked`&&(0,A.jsxs)(`div`,{
+children:[(0,A.jsxs)(`button`,{
+disabled:!0,className:`flex h-11 w-full items-center justify-center gap-2 rounded-full border border-border bg-surface-2 text-sm text-muted-foreground`,children:[(0,A.jsx)(Cn,{
+className:`h-4 w-4`
+}
+),` Locked`]
+}
+),i?.prev&&(0,A.jsxs)(`p`,{
+className:`mt-3 text-center text-xs text-muted-foreground`,children:[`Certify `,(0,A.jsx)(Ds,{
+to:`/skills/${
+i.prev.slug
+}
+`,className:`text-foreground underline underline-offset-4`,children:i.prev.name
+}
+),` first to unlock.`]
+}
+)]
+}
+),[`available`,`in_progress`,`completed`].includes(r)&&(0,A.jsx)(bE,{
+to:`/assessment/${
+e.slug
+}
+`,size:`lg`,className:`w-full`,children:r===`in_progress`?`Continue assessment`:r===`completed`?`Retake assessment`:`Get certified`
+}
+)]
+}
+),(0,A.jsxs)(`p`,{
+className:`mt-5 border-t border-border pt-5 text-xs leading-relaxed text-muted-foreground`,children:[`You're purchasing an `,(0,A.jsx)(`span`,{
+className:`text-foreground`,children:`assessment and certification attempt`
+}
+),` — not a course. Demo build: no payment is taken.`]
+}
+)]
+}
+)
+}
+)
+}
+function Nk({
+skill:e,state:t
+}
+){
+return(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(`h2`,{
+className:`font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground`,children:`Counts toward`
+}
+),(0,A.jsx)(`ul`,{
+className:`mt-5 space-y-3`,children:e.programs.map(n=>{
+let r=ME(n),i=r.skills.filter(e=>t.certified[e]).length,a=r.skills.indexOf(e.slug)+1;
+return(0,A.jsx)(`li`,{
+children:(0,A.jsxs)(Ds,{
+to:`/programs/${
+n
+}
+`,className:`group flex items-center gap-5 rounded-[20px] border border-border bg-surface p-5 transition-all hover:border-foreground/20`,children:[(0,A.jsxs)(`div`,{
+className:`flex-1`,children:[(0,A.jsxs)(`div`,{
+className:`font-medium tracking-tight`,children:[r.role,` role certification`]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-0.5 text-sm text-muted-foreground`,children:[`Skill `,String(a).padStart(2,`0`),` of 12 in `,r.name]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-3 flex items-center gap-3`,children:[(0,A.jsx)(`div`,{
+className:`h-1 flex-1 overflow-hidden rounded-full bg-surface-3`,children:(0,A.jsx)(`div`,{
+className:`h-full rounded-full bg-gradient-to-r from-brand to-brand-2`,style:{
+width:`${
+i/12*100
+}
+%`
+}
+
+}
+)
+}
+),(0,A.jsxs)(`span`,{
+className:`font-mono text-[11px] text-muted-foreground`,children:[i,` / 12`]
+}
+)]
+}
+)]
+}
+),(0,A.jsx)(ln,{
+className:`h-4 w-4 text-muted-foreground transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5`
+}
+)]
+}
+)
+}
+,n)
+}
+)
+}
+)]
+}
+)
+}
+function Pk(){
+let{
+slug:e
+}
+=Ho(),t=NE(e),n=DD();
+if(!t)return(0,A.jsx)(Ok,{
+title:`Skill not found`,to:`/skills`,cta:`See all skills`
+}
+);
+let r=LD(e,n),i=ME(t.programs[0]);
+return(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-7xl px-5 pb-24 pt-28 lg:px-8 lg:pt-36`,children:[(0,A.jsxs)(Ds,{
+to:`/programs/${
+i.slug
+}
+`,className:`inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground`,children:[(0,A.jsx)(sn,{
+className:`h-4 w-4`
+}
+),` `,i.name,` path`]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-8 grid gap-12 lg:grid-cols-[1fr_400px] lg:gap-16`,children:[(0,A.jsxs)(`div`,{
+children:[(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:16,filter:`blur(8px)`
+}
+,animate:{
+opacity:1,y:0,filter:`blur(0px)`
+}
+,transition:{
+duration:.8
+}
+,children:[(0,A.jsx)(LE,{
+children:`Skill certification`
+}
+),(0,A.jsx)(`h1`,{
+className:`mt-5 text-balance text-5xl font-semibold leading-[0.96] tracking-[-0.045em] sm:text-7xl`,children:t.name
+}
+),(0,A.jsx)(`p`,{
+className:`mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground`,children:t.description
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-14`,children:[(0,A.jsx)(`h2`,{
+className:`font-mono text-[11px] uppercase tracking-[0.18em] text-muted-foreground`,children:`The assessment`
+}
+),(0,A.jsx)(jk,{
+
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-14`,children:(0,A.jsx)(Nk,{
+skill:t,state:n
+}
+)
+}
+)]
+}
+),(0,A.jsx)(Mk,{
+skill:t,access:r,certified:n.certified[e]
+}
+)]
+}
+)]
+}
+)
+}
+function Fk({
+skill:e,stage:t
+}
+){
+return(0,A.jsxs)(`div`,{
+className:`sticky top-16 z-20 -mx-5 mb-10 border-b border-border bg-background/85 px-5 py-4 backdrop-blur-xl`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center justify-between`,children:[(0,A.jsxs)(`div`,{
+className:`min-w-0`,children:[(0,A.jsx)(`div`,{
+className:`truncate text-sm font-medium tracking-tight`,children:e.name
+}
+),(0,A.jsxs)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground`,children:[`Stage `,t+1,` / 4 · `,OE[t].type]
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`flex gap-1`,children:OE.map((e,n)=>(0,A.jsx)(`span`,{
+className:`rounded-full px-2 py-1 font-mono text-[10px] transition-colors duration-300 ${
+n===t?`bg-foreground text-background`:n<t?`bg-success/15 text-success`:`bg-surface-2 text-muted-foreground`
+}
+`,children:e.type
+}
+,e.id))
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-3 h-1 overflow-hidden rounded-full bg-surface-3`,children:(0,A.jsx)($.div,{
+className:`h-full rounded-full bg-gradient-to-r from-brand to-brand-2`,animate:{
+width:`${
+(t+1)/4*100
+}
+%`
+}
+,transition:{
+duration:.6
+}
+
+}
+)
+}
+)]
+}
+)
+}
+function Ik({
+skill:e,onStart:t
+}
+){
+let[n,r]=(0,y.useState)(OD().candidate||``);
+return(0,A.jsxs)(`form`,{
+onSubmit:e=>{
+e.preventDefault(),AD(n.trim()||`Demo Candidate`),t()
+}
+,className:`pt-8`,children:[(0,A.jsx)(LE,{
+children:`Skill certification attempt`
+}
+),(0,A.jsx)(`h1`,{
+className:`mt-5 text-5xl font-semibold tracking-[-0.045em]`,children:e.name
+}
+),(0,A.jsxs)(`p`,{
+className:`mt-4 text-lg text-muted-foreground`,children:[`Four stages. Take your time — the pass standard is `,e.passScore,`% overall.`]
+}
+),(0,A.jsx)(`ol`,{
+className:`mt-8 divide-y divide-border rounded-[22px] border border-border bg-surface`,children:OE.map((e,t)=>(0,A.jsxs)(`li`,{
+className:`flex items-center gap-4 px-5 py-4`,children:[(0,A.jsx)(`span`,{
+className:`font-mono text-xs text-muted-foreground`,children:String(t+1).padStart(2,`0`)
+}
+),(0,A.jsx)(`span`,{
+className:`w-16 font-mono text-xs tracking-[0.14em]`,children:e.type
+}
+),(0,A.jsx)(`span`,{
+className:`flex-1 text-sm text-muted-foreground`,children:e.description
+}
+),(0,A.jsx)(`span`,{
+className:`hidden font-mono text-[11px] text-muted-foreground sm:block`,children:e.duration
+}
+)]
+}
+,e.id))
+}
+),(0,A.jsxs)(`label`,{
+className:`mt-8 block`,children:[(0,A.jsx)(`span`,{
+className:`text-sm font-medium`,children:`Name on certificate`
+}
+),(0,A.jsx)(`input`,{
+value:n,onChange:e=>r(e.target.value),placeholder:`Demo Candidate`,className:`mt-2 h-12 w-full rounded-xl border border-input bg-surface px-4 text-[15px] outline-none transition-colors focus:border-brand`
+}
+)]
+}
+),(0,A.jsx)(bE,{
+type:`submit`,size:`lg`,className:`mt-6 w-full sm:w-auto`,children:`Start assessment`
+}
+),(0,A.jsx)(`p`,{
+className:`mt-4 text-xs text-muted-foreground`,children:`Demo build — ₹499 + GST would be charged here. No payment is taken.`
+}
+)]
+}
+)
+}
+function Lk({
+onBack:e,onNext:t,nextLabel:n=`Next`,disabled:r,hint:i
+}
+){
+return(0,A.jsxs)(`div`,{
+className:`mt-8 flex items-center justify-between gap-4`,children:[e?(0,A.jsxs)(`button`,{
+onClick:e,className:`inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground`,children:[(0,A.jsx)(sn,{
+className:`h-4 w-4`
+}
+),` Back`]
+}
+):(0,A.jsx)(`span`,{
+
+}
+),(0,A.jsxs)(`div`,{
+className:`flex items-center gap-4`,children:[i&&(0,A.jsx)(`span`,{
+className:`hidden font-mono text-[11px] text-muted-foreground sm:block`,children:i
+}
+),(0,A.jsx)(bE,{
+onClick:t,disabled:r,children:n
+}
+)]
+}
+)]
+}
+)
+}
+function Rk({
+mcqs:e,answers:t,setAnswers:n,onDone:r
+}
+){
+let[i,a]=(0,y.useState)(0),o=e[i],s=e=>{
+let r=[...t];
+r[i]=e,n(r)
+}
+,c=i===e.length-1;
+return(0,A.jsxs)(`div`,{
+children:[(0,A.jsxs)(`div`,{
+className:`font-mono text-[11px] uppercase tracking-[0.18em] text-brand`,children:[`Know · Question `,i+1,` of `,e.length]
+}
+),(0,A.jsx)(th,{
+mode:`wait`,children:(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:12
+}
+,animate:{
+opacity:1,y:0
+}
+,exit:{
+opacity:0,y:-12
+}
+,transition:{
+duration:.3
+}
+,children:[(0,A.jsx)(`h2`,{
+className:`mt-4 text-balance text-2xl font-semibold leading-snug tracking-tight sm:text-3xl`,children:o.q
+}
+),(0,A.jsx)(`div`,{
+className:`mt-8 space-y-2.5`,role:`radiogroup`,children:o.options.map((e,n)=>{
+let r=t[i]===n;
+return(0,A.jsxs)(`button`,{
+role:`radio`,"aria-checked":r,onClick:()=>s(n),className:`flex w-full items-center gap-4 rounded-2xl border px-5 py-4 text-left text-[15px] transition-all duration-200 ${
+r?`border-brand bg-brand/10`:`border-border bg-surface hover:border-foreground/25`
+}
+`,children:[(0,A.jsx)(`span`,{
+className:`flex h-7 w-7 shrink-0 items-center justify-center rounded-full border font-mono text-xs transition-colors ${
+r?`border-brand bg-brand text-brand-foreground`:`border-border`
+}
+`,children:String.fromCharCode(65+n)
+}
+),e]
+}
+,e)
+}
+)
+}
+)]
+}
+,i)
+}
+),(0,A.jsx)(`div`,{
+className:`mt-8 flex gap-1.5`,children:e.map((e,n)=>(0,A.jsx)(`span`,{
+className:`h-1 flex-1 rounded-full transition-colors ${
+t[n]===void 0?`bg-surface-3`:`bg-brand`
+}
+`
+}
+,n))
+}
+),(0,A.jsx)(Lk,{
+onBack:i>0?()=>a(i-1):null,onNext:()=>c?r():a(i+1),disabled:t[i]===void 0,nextLabel:c?`Continue to Think`:`Next`
+}
+)]
+}
+)
+}
+function zk(e){
+let t=e.name;
+return[{
+q:`You're asked to apply ${
+t
+}
+ on a live project with an unclear brief. What's the strongest first move?`,options:[`Start producing output immediately to show momentum`,`Clarify the goal, constraints and how success will be measured`,`Reuse the approach from your last project unchanged`,`Wait for a complete specification before doing anything`],answer:1
+}
+,{
+q:`Which signal best shows your ${
+t
+}
+ work is actually effective?`,options:[`A measurable change in the outcome it was meant to influence`,`The number of hours invested`,`Positive comments from teammates`,`How many tools were used`],answer:0
+}
+,{
+q:`A stakeholder challenges a decision you made using ${
+t
+}
+. The best response is to…`,options:[`Defer to the most senior person in the room`,`Defend it without revisiting`,`Walk through the evidence and trade-offs, and invite counter-evidence`,`Quietly drop the decision`],answer:2
+}
+,{
+q:`Time is short. How should you scope ${
+t
+}
+ work?`,options:[`Do everything, but at lower quality`,`Push the deadline until it can be done fully`,`Pick the part you find most interesting`,`Prioritise the smallest piece that tests the riskiest assumption`],answer:3
+}
+,{
+q:`What most often causes ${
+t
+}
+ work to fail in practice?`,options:[`Solving a poorly defined problem`,`Too much documentation`,`Not using the newest tools`,`Presenting too early`],answer:0
+}
+]
+}
+var Bk=e=>`Describe a real situation where you applied ${
+e.name.toLowerCase()
+}
+. What was the problem, what did you do, what trade-offs did you make — and how did you know it worked?`,Vk=e=>[`Let's start simple. In your own words, what does good ${
+e.name.toLowerCase()
+}
+ look like?`,`Tell me about a time your ${
+e.name.toLowerCase()
+}
+ work didn't go to plan. What did you change?`,`If you had to teach one principle of ${
+e.name.toLowerCase()
+}
+ to a new teammate, what would it be and why?`],Hk=e=>({
+title:`${
+e.name
+}
+ — practical brief`,brief:`You've joined a mid-sized company as the person responsible for ${
+e.name.toLowerCase()
+}
+. Leadership wants a short, concrete plan they can act on this quarter.`,deliverables:[`Your approach, step by step`,`Key assumptions and how you'd test them`,`What you'd measure to know it worked`,`Optional: a link to supporting work (doc, repo, file)`]
+}
+),Uk=(e=``)=>e.trim().split(/\s+/).filter(Boolean).length,Wk=e=>Math.max(0,Math.min(100,Math.round(e)));
+function Gk({
+mcq:e,mcqs:t,think:n,interview:r,build:i
+}
+){
+let a=t.filter((t,n)=>e[n]===t.answer).length,o=Wk(a/t.length*100),s=Wk(Uk(n)?35+Uk(n)*.55:0),c=Wk(r.reduce((e,t)=>e+(Uk(t)?40+Uk(t)*1.1:0),0)/r.length),l=Wk(Uk(i)?40+Uk(i)*.5+(/https?:\/\//.test(i)?12:0):0);
+return{
+score:Math.round((o+s+c+l)/4),breakdown:{
+knowledge:o,reasoning:s,interview:c,practical:l
+}
+
+}
+
+}
+var Kk=Uk,qk=40;
+function Jk({
+skill:e,value:t,onChange:n,onBack:r,onDone:i
+}
+){
+let a=Kk(t);
+return(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(`div`,{
+className:`font-mono text-[11px] uppercase tracking-[0.18em] text-brand`,children:`Think · Descriptive`
+}
+),(0,A.jsx)(`h2`,{
+className:`mt-4 text-balance text-2xl font-semibold leading-snug tracking-tight sm:text-3xl`,children:Bk(e)
+}
+),(0,A.jsx)(`p`,{
+className:`mt-3 text-sm text-muted-foreground`,children:`Aim for 120–250 words. Specifics beat generalities.`
+}
+),(0,A.jsx)(`textarea`,{
+value:t,onChange:e=>n(e.target.value),rows:12,placeholder:`Start with the situation…`,className:`mt-6 w-full resize-y rounded-2xl border border-input bg-surface p-5 text-[15px] leading-relaxed outline-none transition-colors placeholder:text-muted-foreground focus:border-brand`,"aria-label":`Your written response`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-2 flex justify-between font-mono text-[11px] text-muted-foreground`,children:[(0,A.jsxs)(`span`,{
+className:a>=qk?`text-success`:``,children:[a,` words`]
+}
+),(0,A.jsxs)(`span`,{
+children:[`Minimum `,qk]
+}
+)]
+}
+),(0,A.jsx)(Lk,{
+onBack:r,onNext:i,disabled:a<qk,nextLabel:`Continue to Defend`
+}
+)]
+}
+)
+}
+function Yk({
+skill:e,answers:t,setAnswers:n,onBack:r,onDone:i
+}
+){
+let a=Vk(e),[o,s]=(0,y.useState)(``),[c,l]=(0,y.useState)(t.length),u=(0,y.useRef)(null),d=c<=t.length&&t.length<a.length,f=Math.min(c,a.length);
+(0,y.useEffect)(()=>{
+if(!d)return;
+let e=setTimeout(()=>l(t.length+1),1100);
+return()=>clearTimeout(e)
+}
+,[d,t.length]),(0,y.useEffect)(()=>{
+u.current?.scrollIntoView({
+behavior:`smooth`,block:`nearest`
+}
+)
+}
+,[t.length,d]);
+let p=e=>{
+e.preventDefault(),o.trim()&&(n([...t,o.trim()]),s(``))
+}
+,m=t.length>=a.length;
+return(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(`div`,{
+className:`font-mono text-[11px] uppercase tracking-[0.18em] text-brand`,children:`Defend · AI interview`
+}
+),(0,A.jsx)(`h2`,{
+className:`mt-4 text-2xl font-semibold tracking-tight sm:text-3xl`,children:`Explain your thinking.`
+}
+),(0,A.jsx)(`p`,{
+className:`mt-2 text-sm text-muted-foreground`,children:`Demo interviewer with scripted questions. The full product runs a spoken interview — here you answer by typing.`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-6 space-y-4 rounded-[22px] border border-border bg-surface p-5`,children:[a.slice(0,f).map((e,n)=>(0,A.jsxs)(`div`,{
+className:`space-y-3`,children:[(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:8
+}
+,animate:{
+opacity:1,y:0
+}
+,className:`flex gap-3`,children:[(0,A.jsx)(`span`,{
+className:`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand/15 text-brand`,children:(0,A.jsx)(Nn,{
+className:`h-4 w-4`
+}
+)
+}
+),(0,A.jsx)(`p`,{
+className:`rounded-2xl rounded-tl-sm bg-surface-2 px-4 py-3 text-[15px]`,children:e
+}
+)]
+}
+),t[n]&&(0,A.jsx)($.p,{
+initial:{
+opacity:0,y:8
+}
+,animate:{
+opacity:1,y:0
+}
+,className:`ml-11 rounded-2xl rounded-tr-sm border border-border px-4 py-3 text-[15px]`,children:t[n]
+}
+)]
+}
+,n)),d&&!m&&(0,A.jsxs)(`div`,{
+className:`flex items-center gap-3`,children:[(0,A.jsx)(`span`,{
+className:`flex h-8 w-8 items-center justify-center rounded-full bg-brand/15 text-brand`,children:(0,A.jsx)(Nn,{
+className:`h-4 w-4`
+}
+)
+}
+),(0,A.jsx)(`span`,{
+className:`flex gap-1`,children:[0,1,2].map(e=>(0,A.jsx)($.span,{
+className:`h-1.5 w-1.5 rounded-full bg-muted-foreground`,animate:{
+opacity:[.3,1,.3]
+}
+,transition:{
+duration:1,repeat:1/0,delay:e*.2
+}
+
+}
+,e))
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+ref:u
+}
+)]
+}
+),!m&&(0,A.jsxs)(`form`,{
+onSubmit:p,className:`mt-4 flex items-end gap-2`,children:[(0,A.jsx)(`textarea`,{
+value:o,onChange:e=>s(e.target.value),disabled:d,rows:3,placeholder:`Type your answer…`,"aria-label":`Your interview answer`,className:`flex-1 resize-none rounded-2xl border border-input bg-surface p-4 text-[15px] outline-none transition-colors placeholder:text-muted-foreground focus:border-brand disabled:opacity-50`
+}
+),(0,A.jsx)(`button`,{
+type:`submit`,disabled:d||!o.trim(),className:`flex h-12 w-12 items-center justify-center rounded-full bg-foreground text-background transition-transform active:scale-95 disabled:opacity-30`,"aria-label":`Send answer`,children:(0,A.jsx)(kn,{
+className:`h-4 w-4`
+}
+)
+}
+)]
+}
+),(0,A.jsx)(Lk,{
+onBack:r,onNext:i,disabled:!m,nextLabel:`Continue to Build`,hint:`${
+t.length
+}
+ / ${
+a.length
+}
+ answered`
+}
+)]
+}
+)
+}
+var Xk=50;
+function Zk({
+skill:e,onBack:t,onSubmit:n
+}
+){
+let r=Hk(e),[i,a]=(0,y.useState)(``),[o,s]=(0,y.useState)(``),c=Kk(i);
+return(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(`div`,{
+className:`font-mono text-[11px] uppercase tracking-[0.18em] text-brand`,children:`Build · Practical project`
+}
+),(0,A.jsx)(`h2`,{
+className:`mt-4 text-2xl font-semibold tracking-tight sm:text-3xl`,children:r.title
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-6 rounded-[22px] border border-border bg-surface p-6`,children:[(0,A.jsx)(`p`,{
+className:`text-[15px] leading-relaxed`,children:r.brief
+}
+),(0,A.jsx)(`div`,{
+className:`mt-5 font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground`,children:`Deliverables`
+}
+),(0,A.jsx)(`ul`,{
+className:`mt-3 space-y-2`,children:r.deliverables.map(e=>(0,A.jsxs)(`li`,{
+className:`flex items-start gap-2.5 text-sm`,children:[(0,A.jsx)(fn,{
+className:`mt-0.5 h-4 w-4 shrink-0 text-success`
+}
+),e]
+}
+,e))
+}
+)]
+}
+),(0,A.jsx)(`textarea`,{
+value:i,onChange:e=>a(e.target.value),rows:12,placeholder:`Write your plan here…`,"aria-label":`Your practical submission`,className:`mt-6 w-full resize-y rounded-2xl border border-input bg-surface p-5 text-[15px] leading-relaxed outline-none transition-colors placeholder:text-muted-foreground focus:border-brand`
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-2 flex justify-between font-mono text-[11px] text-muted-foreground`,children:[(0,A.jsxs)(`span`,{
+className:c>=Xk?`text-success`:``,children:[c,` words`]
+}
+),(0,A.jsxs)(`span`,{
+children:[`Minimum `,Xk]
+}
+)]
+}
+),(0,A.jsxs)(`label`,{
+className:`mt-5 flex items-center gap-3 rounded-2xl border border-input bg-surface px-4 focus-within:border-brand`,children:[(0,A.jsx)(xn,{
+className:`h-4 w-4 text-muted-foreground`
+}
+),(0,A.jsx)(`input`,{
+value:o,onChange:e=>s(e.target.value),placeholder:`https:// link to supporting work (optional)`,className:`h-12 flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted-foreground`,"aria-label":`Supporting link`
+}
+)]
+}
+),(0,A.jsx)(Lk,{
+onBack:t,onNext:()=>n(`${
+i
+}
+\n${
+o
+}
+`),disabled:c<Xk,nextLabel:`Submit for evaluation`
+}
+)]
+}
+)
+}
+function Qk(){
+let{
+slug:e
+}
+=Ho(),t=Ro(),n=NE(e),r=DD(),i=(0,y.useMemo)(()=>n?zk(n):[],[n]),[a,o]=(0,y.useState)(-1),[s,c]=(0,y.useState)([]),[l,u]=(0,y.useState)(``),[d,f]=(0,y.useState)([]),[p,m]=(0,y.useState)(!1);
+if(!n)return(0,A.jsx)(Ok,{
+title:`Assessment not found`,to:`/skills`,cta:`See all skills`
+}
+);
+let{
+status:h
+}
+=LD(e,r);
+if(h===`locked`&&a===-1)return(0,A.jsx)(Ok,{
+title:`This skill is locked`,body:`Certify the previous skill in its path to unlock this assessment.`,to:`/skills/${
+e
+}
+`,cta:`Back to skill`
+}
+);
+let g=t=>{
+o(t),jD(e,t),window.scrollTo({
+top:0,behavior:`smooth`
+}
+)
+}
+,_=[(0,A.jsx)(Rk,{
+mcqs:i,answers:s,setAnswers:c,onDone:()=>g(1)
+}
+,`k`),(0,A.jsx)(Jk,{
+skill:n,value:l,onChange:u,onBack:()=>g(0),onDone:()=>g(2)
+}
+,`t`),(0,A.jsx)(Yk,{
+skill:n,answers:d,setAnswers:f,onBack:()=>g(1),onDone:()=>g(3)
+}
+,`d`),(0,A.jsx)(Zk,{
+skill:n,onBack:()=>g(2),onSubmit:r=>{
+m(!0);
+let{
+score:a,breakdown:o
+}
+=Gk({
+mcq:s,mcqs:i,think:l,interview:d,build:r
+}
+);
+setTimeout(()=>{
+MD(e,{
+score:a,breakdown:o,passed:a>=n.passScore,date:new Date().toISOString()
+}
+),t(`/assessment/${
+e
+}
+/result`)
+}
+,2200)
+}
+
+}
+,`b`)];
+return(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-3xl px-5 pb-24 pt-24 lg:pt-28`,children:[a>=0&&(0,A.jsx)(Fk,{
+skill:n,stage:a
+}
+),p?(0,A.jsxs)($.div,{
+initial:{
+opacity:0
+}
+,animate:{
+opacity:1
+}
+,className:`flex min-h-[50vh] flex-col items-center justify-center text-center`,children:[(0,A.jsx)(Sn,{
+className:`h-8 w-8 animate-spin text-brand`
+}
+),(0,A.jsx)(`h2`,{
+className:`mt-6 text-2xl font-semibold tracking-tight`,children:`Evaluating your attempt`
+}
+),(0,A.jsx)(`p`,{
+className:`mt-2 text-sm text-muted-foreground`,children:`Scoring knowledge, reasoning, interview and practical work…`
+}
+)]
+}
+):(0,A.jsx)(th,{
+mode:`wait`,children:(0,A.jsx)($.div,{
+initial:{
+opacity:0,x:24,filter:`blur(6px)`
+}
+,animate:{
+opacity:1,x:0,filter:`blur(0px)`
+}
+,exit:{
+opacity:0,x:-24,filter:`blur(6px)`
+}
+,transition:{
+duration:.4
+}
+,children:a===-1?(0,A.jsx)(Ik,{
+skill:n,onStart:()=>g(0)
+}
+):_[a]
+}
+,a)
+}
+)]
+}
+)
+}
+function $k({
+to:e,duration:t=1.6,delay:n=0,suffix:r=``
+}
+){
+let[i,a]=(0,y.useState)(0);
+return(0,y.useEffect)(()=>{
+let r=hE(0,e,{
+duration:t,delay:n,ease:[.2,.7,.2,1],onUpdate:e=>a(Math.round(e))
+}
+);
+return()=>r.stop()
+}
+,[e,t,n]),(0,A.jsxs)(`span`,{
+className:`tabular-nums`,children:[i,r]
+}
+)
+}
+var eA=[[`knowledge`,`Knowledge`,`KNOW`],[`reasoning`,`Reasoning`,`THINK`],[`interview`,`Interview`,`DEFEND`],[`practical`,`Practical`,`BUILD`]];
+function tA({
+breakdown:e
+}
+){
+return(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground`,children:`Breakdown`
+}
+),(0,A.jsx)(`div`,{
+className:`mt-6 space-y-5`,children:eA.map(([t,n,r],i)=>(0,A.jsxs)(`div`,{
+children:[(0,A.jsxs)(`div`,{
+className:`flex items-baseline justify-between`,children:[(0,A.jsxs)(`span`,{
+className:`text-sm font-medium`,children:[n,` `,(0,A.jsx)(`span`,{
+className:`ml-1 font-mono text-[10px] text-muted-foreground`,children:r
+}
+)]
+}
+),(0,A.jsx)(`span`,{
+className:`font-mono text-sm`,children:(0,A.jsx)($k,{
+to:e[t],suffix:`%`,delay:.5+i*.15,duration:1.2
+}
+)
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-2 h-1.5 overflow-hidden rounded-full bg-surface-3`,children:(0,A.jsx)($.div,{
+initial:{
+width:0
+}
+,animate:{
+width:`${
+e[t]
+}
+%`
+}
+,transition:{
+delay:.5+i*.15,duration:1.2,ease:[.2,.7,.2,1]
+}
+,className:`h-full rounded-full bg-gradient-to-r from-brand to-brand-2`
+}
+)
+}
+)]
+}
+,t))
+}
+)]
+}
+)
+}
+function nA(){
+let{
+slug:e
+}
+=Ho(),t=NE(e),n=DD(),r=t&&n.attempts[e];
+if(!t)return(0,A.jsx)(Ok,{
+title:`Skill not found`,to:`/skills`,cta:`See all skills`
+}
+);
+if(!r)return(0,A.jsx)(Ok,{
+title:`No attempt yet`,body:`You haven't completed the ${
+t.name
+}
+ assessment.`,to:`/skills/${
+e
+}
+`,cta:`Go to skill`
+}
+);
+let i=r.passed,a=ME(t.programs[0]),o=a.skills.filter(e=>n.certified[e]).length,s=a.skills.find(e=>!n.certified[e]);
+return(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-4xl px-5 pb-24 pt-28 lg:pt-36`,children:[(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:16
+}
+,animate:{
+opacity:1,y:0
+}
+,transition:{
+duration:.7
+}
+,children:[(0,A.jsxs)(LE,{
+children:[`Skill certification result`,r.simulated?` · simulated demo`:``]
+}
+),(0,A.jsx)(`h1`,{
+className:`mt-5 text-4xl font-semibold tracking-[-0.04em] sm:text-5xl`,children:t.name
+}
+)]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-10 grid gap-5 md:grid-cols-[1fr_1.2fr]`,children:[(0,A.jsxs)($.div,{
+initial:{
+opacity:0,scale:.96
+}
+,animate:{
+opacity:1,scale:1
+}
+,transition:{
+delay:.2,duration:.6
+}
+,className:`rounded-[26px] border p-8 ${
+i?`border-success/40 bg-success/10`:`border-border bg-surface`
+}
+`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center gap-2 font-mono text-sm tracking-[0.16em] ${
+i?`text-success`:`text-warning`
+}
+`,children:[i?(0,A.jsx)(fn,{
+className:`h-4 w-4`,strokeWidth:3
+}
+):(0,A.jsx)(In,{
+className:`h-4 w-4`
+}
+),` `,i?`CERTIFIED`:`NOT YET CERTIFIED`]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-6 font-heading text-8xl font-semibold tracking-[-0.06em]`,children:(0,A.jsx)($k,{
+to:r.score,suffix:`%`,delay:.3
+}
+)
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-2 font-mono text-xs text-muted-foreground`,children:[`Pass standard `,t.passScore,`%`]
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`rounded-[26px] border border-border bg-surface p-8`,children:(0,A.jsx)(tA,{
+breakdown:r.breakdown
+}
+)
+}
+)]
+}
+),i?(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:20
+}
+,animate:{
+opacity:1,y:0
+}
+,transition:{
+delay:1.6,duration:.7
+}
+,className:`light-sweep sweep-now mt-5 flex flex-col gap-5 rounded-[26px] border border-border bg-surface p-7 sm:flex-row sm:items-center`,children:[(0,A.jsx)(`span`,{
+className:`flex h-12 w-12 items-center justify-center rounded-2xl bg-brand/15 text-brand`,children:(0,A.jsx)(un,{
+className:`h-6 w-6`
+}
+)
+}
+),(0,A.jsxs)(`div`,{
+className:`flex-1`,children:[(0,A.jsx)(`div`,{
+className:`text-lg font-semibold tracking-tight`,children:`Certificate generated`
+}
+),(0,A.jsx)(`div`,{
+className:`font-mono text-xs text-muted-foreground`,children:r.certId
+}
+)]
+}
+),(0,A.jsx)(bE,{
+to:`/certificate/${
+r.certId
+}
+`,children:`View certificate`
+}
+)]
+}
+):(0,A.jsxs)(`div`,{
+className:`mt-5 flex flex-col gap-4 rounded-[26px] border border-border bg-surface p-7 sm:flex-row sm:items-center`,children:[(0,A.jsx)(`p`,{
+className:`flex-1 text-muted-foreground`,children:`You didn't meet the standard this time. Focus on your lowest-scoring stage and retake when ready.`
+}
+),(0,A.jsx)(bE,{
+to:`/assessment/${
+e
+}
+`,children:`Retake`
+}
+)]
+}
+),(0,A.jsxs)(Ds,{
+to:`/programs/${
+a.slug
+}
+`,className:`group mt-5 flex items-center gap-5 rounded-[26px] border border-border p-7 transition-colors hover:bg-surface`,children:[(0,A.jsxs)(`div`,{
+className:`flex-1`,children:[(0,A.jsxs)(`div`,{
+className:`font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground`,children:[a.role,` path`]
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-1 text-lg font-semibold tracking-tight`,children:[o,` / 12 skills certified`,s?` · Next: ${
+NE(s).name
+}
+`:` · Role credential ready`]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-3 h-1 overflow-hidden rounded-full bg-surface-3`,children:(0,A.jsx)($.div,{
+initial:{
+width:0
+}
+,animate:{
+width:`${
+o/12*100
+}
+%`
+}
+,transition:{
+delay:1.8,duration:1
+}
+,className:`h-full rounded-full bg-gradient-to-r from-brand to-brand-2`
+}
+)
+}
+)]
+}
+),(0,A.jsx)(cn,{
+className:`h-5 w-5 transition-transform group-hover:translate-x-1`
+}
+)]
+}
+)]
+}
+)
+}
+var rA=e=>e.type===`role`?ME(e.programId)?.role:NE(e.skillId)?.name;
+function iA({
+cert:e
+}
+){
+let t=e.type===`role`,n=t?ME(e.programId):null,r=new Date(e.issueDate).toLocaleDateString(`en-GB`,{
+day:`numeric`,month:`long`,year:`numeric`
+}
+);
+return(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:40,rotateX:8
+}
+,animate:{
+opacity:1,y:0,rotateX:0
+}
+,transition:{
+type:`spring`,stiffness:70,damping:16
+}
+,className:`print-area light-sweep sweep-now relative overflow-hidden rounded-[28px] border border-border bg-surface p-8 shadow-lift sm:p-12`,children:[(0,A.jsx)(`div`,{
+className:`pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full bg-brand/10 blur-3xl`
+}
+),(0,A.jsx)(`div`,{
+className:`pointer-events-none absolute inset-3 rounded-[22px] border border-border`
+}
+),(0,A.jsxs)(`div`,{
+className:`relative`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-start justify-between`,children:[(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(`div`,{
+className:`font-heading text-sm font-semibold tracking-[0.2em]`,children:`ACCELERATORX`
+}
+),(0,A.jsx)(`div`,{
+className:`mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground`,children:t?`Role certification`:`Skill certificate`
+}
+)]
+}
+),(0,A.jsx)(`span`,{
+className:`flex h-14 w-14 items-center justify-center rounded-2xl ${
+t?`rotate-45 bg-brand text-brand-foreground`:`bg-brand/15 text-brand`
+}
+`,children:(0,A.jsx)(un,{
+className:`h-6 w-6 ${
+t?`-rotate-45`:``
+}
+`
+}
+)
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-14 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground`,children:t?`Certified as`:`Certified in`
+}
+),(0,A.jsx)(`h2`,{
+className:`mt-2 text-balance text-4xl font-semibold leading-[1] tracking-[-0.04em] sm:text-6xl`,children:rA(e)
+}
+),(0,A.jsx)(`div`,{
+className:`mt-10 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground`,children:`Awarded to`
+}
+),(0,A.jsx)(`div`,{
+className:`mt-1 font-display text-3xl italic sm:text-4xl`,children:e.candidate
+}
+),t&&(0,A.jsxs)(`div`,{
+className:`mt-3 text-sm text-muted-foreground`,children:[`Based on `,e.completedSkills,` verified skill certifications`]
+}
+),t&&(0,A.jsx)(`ul`,{
+className:`mt-6 grid grid-cols-1 gap-x-6 gap-y-1.5 sm:grid-cols-2`,children:n.skills.map(e=>(0,A.jsxs)(`li`,{
+className:`flex items-center gap-2 text-[13px]`,children:[(0,A.jsx)(jn,{
+className:`h-3.5 w-3.5 text-success`
+}
+),NE(e).name]
+}
+,e))
+}
+),(0,A.jsxs)(`dl`,{
+className:`mt-12 grid grid-cols-2 gap-6 border-t border-border pt-6 sm:grid-cols-4`,children:[(0,A.jsx)(aA,{
+k:t?`Overall score`:`Score`,v:`${
+e.score
+}
+%`
+}
+),(0,A.jsx)(aA,{
+k:`Certificate ID`,v:e.id,mono:!0
+}
+),(0,A.jsx)(aA,{
+k:`Issue date`,v:r
+}
+),(0,A.jsx)(aA,{
+k:`Status`,v:e.verificationStatus===`demo`?`Demo`:`Verified · Demo`,accent:!0
+}
+)]
+}
+)]
+}
+)]
+}
+)
+}
+function aA({
+k:e,v:t,mono:n,accent:r
+}
+){
+return(0,A.jsxs)(`div`,{
+children:[(0,A.jsx)(`dt`,{
+className:`font-mono text-[10px] uppercase tracking-[0.16em] text-muted-foreground`,children:e
+}
+),(0,A.jsx)(`dd`,{
+className:`mt-1 text-sm font-medium ${
+n?`font-mono`:``
+}
+ ${
+r?`text-success`:``
+}
+`,children:t
+}
+)]
+}
+)
+}
+function oA(){
+let{
+id:e
+}
+=Ho();
+DD();
+let t=RD(e),[n,r]=(0,y.useState)(!1),{
+toast:i
+}
+=D();
+if(!t)return(0,A.jsx)(Ok,{
+title:`Certificate not found`,body:`No certificate matches ${
+e
+}
+.`,to:`/verify`,cta:`Verify a certificate`
+}
+);
+let a=[{
+label:`View`,icon:vn,onClick:()=>r(!0)
+}
+,{
+label:`Download`,icon:_n,onClick:()=>window.print()
+}
+,{
+label:`Verify`,icon:jn,to:`/verify?id=${
+t.id
+}
+`
+}
+,{
+label:`Share`,icon:An,onClick:async()=>{
+let e=window.location.href;
+navigator.share?await navigator.share({
+title:`${
+rA(t)
+}
+ — AcceleratorX`,url:e
+}
+).catch(()=>{
+
+}
+):(await navigator.clipboard.writeText(e),i({
+title:`Link copied`,description:`Share it anywhere.`
+}
+))
+}
+
+}
+],o=`flex items-center justify-center gap-2 rounded-full border border-border bg-surface px-5 py-3 text-sm font-medium transition-all hover:-translate-y-0.5 hover:border-foreground/25`;
+return(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-4xl px-5 pb-24 pt-28 lg:pt-36`,style:{
+perspective:1200
+}
+,children:[(0,A.jsx)(iA,{
+cert:t
+}
+),(0,A.jsx)(`div`,{
+className:`mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4`,children:a.map(e=>e.to?(0,A.jsxs)(Ds,{
+to:e.to,className:o,children:[(0,A.jsx)(e.icon,{
+className:`h-4 w-4`
+}
+),e.label]
+}
+,e.label):(0,A.jsxs)(`button`,{
+onClick:e.onClick,className:o,children:[(0,A.jsx)(e.icon,{
+className:`h-4 w-4`
+}
+),e.label]
+}
+,e.label))
+}
+),(0,A.jsx)(`p`,{
+className:`mt-6 text-center text-xs text-muted-foreground`,children:`Demo certificate. Verification checks certificates issued in this browser plus the public demo ID AX-DEMO78.`
+}
+),(0,A.jsx)(th,{
+children:n&&(0,A.jsxs)($.div,{
+initial:{
+opacity:0
+}
+,animate:{
+opacity:1
+}
+,exit:{
+opacity:0
+}
+,onClick:()=>r(!1),className:`fixed inset-0 z-[100] overflow-y-auto bg-background/90 p-5 backdrop-blur-xl sm:p-12`,role:`dialog`,"aria-label":`Certificate view`,children:[(0,A.jsx)(`button`,{
+onClick:()=>r(!1),className:`fixed right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full border border-border bg-surface`,"aria-label":`Close`,children:(0,A.jsx)(In,{
+className:`h-4 w-4`
+}
+)
+}
+),(0,A.jsx)(`div`,{
+className:`mx-auto max-w-5xl pt-10`,onClick:e=>e.stopPropagation(),children:(0,A.jsx)(iA,{
+cert:t
+}
+)
+}
+)]
+}
+)
+}
+)]
+}
+)
+}
+function sA(){
+let[e,t]=(0,y.useState)(new URLSearchParams(window.location.search).get(`id`)||``),[n,r]=(0,y.useState)(`idle`),[i,a]=(0,y.useState)(null);
+return(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-2xl px-5 pb-24 pt-32 lg:pt-40`,children:[(0,A.jsx)(LE,{
+children:`Certificate verification`
+}
+),(0,A.jsx)(`h1`,{
+className:`mt-5 text-5xl font-semibold tracking-[-0.045em] sm:text-6xl`,children:`Verify a certificate.`
+}
+),(0,A.jsx)(`p`,{
+className:`mt-5 text-lg text-muted-foreground`,children:`Enter a certificate ID to confirm it was issued by AcceleratorX.`
+}
+),(0,A.jsxs)(`form`,{
+onSubmit:t=>{
+t.preventDefault(),e.trim()&&(r(`checking`),setTimeout(()=>{
+let t=RD(e.trim());
+a(t||null),r(t?`valid`:`invalid`)
+}
+,900))
+}
+,className:`mt-10 flex flex-col gap-2 sm:flex-row`,children:[(0,A.jsx)(`input`,{
+value:e,onChange:e=>{
+t(e.target.value.toUpperCase()),r(`idle`)
+}
+,placeholder:`AX-XXXXXX`,"aria-label":`Certificate ID`,className:`h-14 flex-1 rounded-full border border-input bg-surface px-6 font-mono text-[15px] tracking-wider outline-none transition-colors placeholder:text-muted-foreground focus:border-brand`
+}
+),(0,A.jsx)(bE,{
+type:`submit`,size:`lg`,disabled:n===`checking`,children:`Verify`
+}
+)]
+}
+),(0,A.jsxs)(`p`,{
+className:`mt-3 pl-2 text-xs text-muted-foreground`,children:[`Try the public demo ID `,(0,A.jsx)(`button`,{
+onClick:()=>t(`AX-DEMO78`),className:`font-mono text-foreground underline underline-offset-4`,children:`AX-DEMO78`
+}
+)]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-10 min-h-[160px]`,children:(0,A.jsxs)(th,{
+mode:`wait`,children:[n===`checking`&&(0,A.jsxs)($.div,{
+initial:{
+opacity:0
+}
+,animate:{
+opacity:1
+}
+,exit:{
+opacity:0
+}
+,className:`flex items-center gap-3 text-muted-foreground`,children:[(0,A.jsx)(Sn,{
+className:`h-5 w-5 animate-spin`
+}
+),` Checking records…`]
+}
+,`c`),n===`valid`&&i&&(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:12,scale:.98
+}
+,animate:{
+opacity:1,y:0,scale:1
+}
+,exit:{
+opacity:0
+}
+,className:`rounded-[24px] border border-success/40 bg-success/10 p-6`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center gap-2 font-mono text-sm tracking-[0.14em] text-success`,children:[(0,A.jsx)(jn,{
+className:`h-5 w-5`
+}
+),` VALID CERTIFICATE`,i.verificationStatus===`demo`?` · DEMO`:``]
+}
+),(0,A.jsx)(`div`,{
+className:`mt-4 text-2xl font-semibold tracking-tight`,children:rA(i)
+}
+),(0,A.jsxs)(`div`,{
+className:`mt-1 text-sm text-muted-foreground`,children:[i.type===`role`?`Role certification`:`Skill certificate`,` · `,i.candidate,` · `,i.score,`% · `,new Date(i.issueDate).toLocaleDateString(`en-GB`)]
+}
+),(0,A.jsxs)(Ds,{
+to:`/certificate/${
+i.id
+}
+`,className:`mt-5 inline-flex items-center gap-1.5 text-sm font-medium`,children:[`View certificate `,(0,A.jsx)(cn,{
+className:`h-4 w-4`
+}
+)]
+}
+)]
+}
+,`v`),n===`invalid`&&(0,A.jsxs)($.div,{
+initial:{
+opacity:0,y:12
+}
+,animate:{
+opacity:1,y:0
+}
+,exit:{
+opacity:0
+}
+,className:`rounded-[24px] border border-border bg-surface p-6`,children:[(0,A.jsxs)(`div`,{
+className:`flex items-center gap-2 font-mono text-sm tracking-[0.14em] text-warning`,children:[(0,A.jsx)(Mn,{
+className:`h-5 w-5`
+}
+),` NO MATCH`]
+}
+),(0,A.jsxs)(`p`,{
+className:`mt-3 text-sm text-muted-foreground`,children:[`No certificate found for `,(0,A.jsx)(`span`,{
+className:`font-mono text-foreground`,children:e
+}
+),`. Check the ID and try again.`]
+}
+)]
+}
+,`i`)]
+}
+)
+}
+),(0,A.jsx)(`p`,{
+className:`text-xs text-muted-foreground`,children:`Demo build: verification checks certificates issued in this browser.`
+}
+)]
+}
+)
+}
+function cA(){
+return(0,A.jsxs)(A.Fragment,{
+children:[(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-7xl px-5 pb-20 pt-32 lg:px-8 lg:pt-40`,children:[(0,A.jsx)(eD,{
+children:(0,A.jsx)(LE,{
+children:`How it works`
+}
+)
+}
+),(0,A.jsx)(eD,{
+delay:.05,children:(0,A.jsxs)(`h1`,{
+className:`mt-5 max-w-4xl text-balance text-5xl font-semibold leading-[0.98] tracking-[-0.045em] sm:text-7xl`,children:[`From one skill`,(0,A.jsx)(`span`,{
+className:`block font-display font-normal italic text-muted-foreground`,children:`to a role credential.`
+}
+)]
+}
+)
+}
+),(0,A.jsx)(eD,{
+delay:.1,children:(0,A.jsx)(`p`,{
+className:`mt-6 max-w-xl text-lg text-muted-foreground`,children:`No course. No lectures. You're assessed on what you already know — then each certificate moves you closer to a role-level credential.`
+}
+)
+}
+)]
+}
+),(0,A.jsx)(GD,{
+
+}
+),(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-7xl px-5 py-24 lg:px-8`,children:[(0,A.jsx)(eD,{
+children:(0,A.jsx)(LE,{
+children:`Every skill assessment`
+}
+)
+}
+),(0,A.jsx)(eD,{
+delay:.05,children:(0,A.jsx)(`h2`,{
+className:`mt-5 text-4xl font-semibold tracking-[-0.035em] sm:text-5xl`,children:`Know. Think. Defend. Build.`
+}
+)
+}
+),(0,A.jsx)(`div`,{
+className:`max-w-4xl`,children:(0,A.jsx)(jk,{
+
+}
+)
+}
+)]
+}
+),(0,A.jsx)(qD,{
+
+}
+),(0,A.jsx)(_k,{
+
+}
+)]
+}
+)
+}
+function lA(){
+return(0,A.jsxs)(A.Fragment,{
+children:[(0,A.jsxs)(`div`,{
+className:`mx-auto max-w-7xl px-5 pt-32 lg:px-8 lg:pt-40`,children:[(0,A.jsx)(eD,{
+children:(0,A.jsx)(LE,{
+children:`FAQ`
+}
+)
+}
+),(0,A.jsx)(eD,{
+delay:.05,children:(0,A.jsx)(`h1`,{
+className:`mt-5 text-5xl font-semibold tracking-[-0.045em] sm:text-7xl`,children:`Questions, answered.`
+}
+)
+}
+)]
+}
+),(0,A.jsx)(gk,{
+showHeading:!1
+}
+),(0,A.jsx)(_k,{
+
+}
+)]
+}
+)
+}
+var uA=()=>{
+let{
+isLoadingAuth:e,isLoadingPublicSettings:t,authError:n,navigateToLogin:r
+}
+=Fm();
+if(t||e)return(0,A.jsx)(`div`,{
+className:`fixed inset-0 flex items-center justify-center bg-background`,children:(0,A.jsx)(`div`,{
+className:`w-8 h-8 border-4 border-border border-t-foreground rounded-full animate-spin`
+}
+)
+}
+);
+if(n){
+if(n.type===`user_not_registered`)return(0,A.jsx)(Im,{
+
+}
+);
+if(n.type===`auth_required`)return r(),null
+}
+return(0,A.jsxs)(fs,{
+children:[(0,A.jsxs)(us,{
+element:(0,A.jsx)(IE,{
+
+}
+),children:[(0,A.jsx)(us,{
+path:`/`,element:(0,A.jsx)(vk,{
+
+}
+)
+}
+),(0,A.jsx)(us,{
+path:`/programs`,element:(0,A.jsx)(yk,{
+
+}
+)
+}
+),(0,A.jsx)(us,{
+path:`/programs/:slug`,element:(0,A.jsx)(kk,{
+
+}
+)
+}
+),(0,A.jsx)(us,{
+path:`/skills`,element:(0,A.jsx)(Ak,{
+
+}
+)
+}
+),(0,A.jsx)(us,{
+path:`/skills/:slug`,element:(0,A.jsx)(Pk,{
+
+}
+)
+}
+),(0,A.jsx)(us,{
+path:`/assessment/:slug`,element:(0,A.jsx)(Qk,{
+
+}
+)
+}
+),(0,A.jsx)(us,{
+path:`/assessment/:slug/result`,element:(0,A.jsx)(nA,{
+
+}
+)
+}
+),(0,A.jsx)(us,{
+path:`/certificate/:id`,element:(0,A.jsx)(oA,{
+
+}
+)
+}
+),(0,A.jsx)(us,{
+path:`/verify`,element:(0,A.jsx)(sA,{
+
+}
+)
+}
+),(0,A.jsx)(us,{
+path:`/how-it-works`,element:(0,A.jsx)(cA,{
+
+}
+)
+}
+),(0,A.jsx)(us,{
+path:`/faq`,element:(0,A.jsx)(lA,{
+
+}
+)
+}
+)]
+}
+),(0,A.jsx)(us,{
+path:`*`,element:(0,A.jsx)(Mm,{
+
+}
+)
+}
+)]
+}
+)
+}
+;
+function dA(){
+return(0,A.jsx)(Bm,{
+children:(0,A.jsx)(Pm,{
+children:(0,A.jsxs)(xa,{
+client:Fa,children:[(0,A.jsxs)(ws,{
+children:[(0,A.jsx)(Rm,{
+
+}
+),(0,A.jsx)(uA,{
+
+}
+)]
+}
+),(0,A.jsx)(pi,{
+
+}
+)]
+}
+)
+}
+)
+}
+)
+}
+v.createRoot(document.getElementById(`root`)).render((0,A.jsx)(dA,{
+
+}
+));
